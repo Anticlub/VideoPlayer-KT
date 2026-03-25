@@ -1,6 +1,5 @@
 package com.example.videoplayer_kt.data.local
 
-import android.util.Log
 import com.example.videoplayer_kt.domain.models.Channel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,8 +11,6 @@ class M3uParser {
 
         lines.forEachIndexed { index, line ->
             if (line.startsWith("#EXTINF")){
-                // TODO: eliminar log al final
-                Log.d("M3uParser",line)
                 val nextLine = lines.getOrNull(index + 1)
                 if (nextLine.isNullOrBlank()) { return@forEachIndexed }
                 if(nextLine.startsWith("#")){ return@forEachIndexed }
