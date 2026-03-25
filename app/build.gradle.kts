@@ -32,6 +32,8 @@ android {
 }
 
 dependencies {
+    // Test
+    testImplementation(libs.kotlinx.coroutines.test)
     // Coroutines
     implementation(libs.coroutines.android)
     // ExoPlayer
