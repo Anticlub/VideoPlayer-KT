@@ -4,11 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.videoplayer_kt"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.videoplayer_kt"
@@ -36,6 +32,19 @@ android {
 }
 
 dependencies {
+    // Coroutines
+    implementation(libs.coroutines.android)
+    // ExoPlayer
+    implementation(libs.exoplayer.core)
+    implementation(libs.exoplayer.hls)
+    implementation(libs.exoplayer.ui)
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.scalar)
+    implementation(libs.okhttp.interceptor)
+    // Navigation
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
