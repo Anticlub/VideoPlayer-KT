@@ -33,7 +33,7 @@ android {
 
 dependencies {
     // Coroutines
-    implementation(libs.couritines.android)
+    implementation(libs.coroutines.android)
     // ExoPlayer
     implementation(libs.exoplayer.core)
     implementation(libs.exoplayer.hls)
@@ -42,6 +42,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.scalar)
     implementation(libs.okhttp.interceptor)
+    // Navigation
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

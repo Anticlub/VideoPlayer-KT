@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/playlistFragment">
+
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="com.example.videoplayer_kt.presentation.playlist.PlaylistFragment"
+        android:label="Playlists" >
+        <action
+            android:id="@+id/action_playlist_to_channel"
+            app:destination="@id/channelFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/channelFragment"
+        android:name="com.example.videoplayer_kt.presentation.channel.ChannelFragment"
+        android:label="Channels" >
+        <action
+            android:id="@+id/action_channel_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.example.videoplayer_kt.presentation.player.PlayerFragment"
+        android:label="Player" />
+
+</navigation>
