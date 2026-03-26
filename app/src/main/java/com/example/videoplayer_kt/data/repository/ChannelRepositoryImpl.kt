@@ -7,8 +7,9 @@ import com.example.videoplayer_kt.domain.models.Channel
 import com.example.videoplayer_kt.domain.repository.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ChannelRepositoryImpl(private val channelDao: ChannelDao) : ChannelRepository{
+class ChannelRepositoryImpl @Inject constructor(private val channelDao: ChannelDao) : ChannelRepository{
 
     override fun getChannelsByPlaylist(playlistId: Long): Flow<List<Channel>> {
         return channelDao.getChannelsByPlaylist(playlistId)
