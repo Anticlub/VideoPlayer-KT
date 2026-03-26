@@ -7,8 +7,9 @@ import com.example.videoplayer_kt.domain.models.Playlist
 import com.example.videoplayer_kt.domain.repository.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class PlaylistRepositoryImpl(private val playlistDao: PlaylistDao) : PlaylistRepository{
+class PlaylistRepositoryImpl @Inject constructor (private val playlistDao: PlaylistDao) : PlaylistRepository{
 
     override fun getAllPlaylists(): Flow<List<Playlist>> {
         return playlistDao.getAllPlaylists()
