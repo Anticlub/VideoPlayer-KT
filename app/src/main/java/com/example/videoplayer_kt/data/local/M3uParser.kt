@@ -3,8 +3,9 @@ package com.example.videoplayer_kt.data.local
 import com.example.videoplayer_kt.domain.models.Channel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class M3uParser {
+class M3uParser @Inject constructor(){
     suspend fun parse(content: String): List<Channel> = withContext(Dispatchers.IO){
         val lines = content.lines()
         val channels = mutableListOf<Channel>()

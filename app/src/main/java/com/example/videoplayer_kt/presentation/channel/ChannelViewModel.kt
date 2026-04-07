@@ -1,0 +1,63 @@
+package com.example.videoplayer_kt.presentation.channel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.videoplayer_kt.domain.models.Channel
+import com.example.videoplayer_kt.domain.usecases.GetChannelsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import okhttp3.internal.checkOffsetAndCount
+import javax.inject.Inject
+
+@HiltViewModel
+class ChannelViewModel @Inject constructor(
+
+    private val getChannelsUseCase: GetChannelsUseCase
+
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<ChannelUiState>(ChannelUiState.Loading)
+    val uiState: StateFlow<ChannelUiState> = _uiState.asStateFlow()
+    private var allChannels: List<Channel> = emptyList()
+    private var selectedGroup: String? = null
+
+
+     fun loadChannel(playlistId: Long) {
+        viewModelScope.launch {
+            _uiState.value = ChannelUiState.Loading
+            try {
+                getChannelsUseCase(playlistId).collect { channels ->
+                    allChannels = channels
+                    _uiState.value = ChannelUiState.Success(channels)
+                }
+            } catch (e: Exception) {
+                _uiState.value = ChannelUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun searchChannels(query: String) {
+        val filtered = allChannels.filter { channel ->
+            val matchesQuery = query.isEmpty() ||
+                    channel.name.contains(query, ignoreCase = true)
+            val matchesGroup = selectedGroup == null ||
+                    channel.group == selectedGroup
+            matchesQuery && matchesGroup
+        }
+        _uiState.value = ChannelUiState.Success(filtered)
+    }
+
+    fun filterByGroup(group: String?) {
+        selectedGroup = group
+        val filtered = allChannels.filter { channel ->
+            val matchesGroup = group == null || channel.group == group
+            matchesGroup
+        }
+        _uiState.value = ChannelUiState.Success(filtered)
+    }
+
+
+}

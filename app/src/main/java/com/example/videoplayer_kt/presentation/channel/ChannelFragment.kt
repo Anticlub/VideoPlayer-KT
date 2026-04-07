@@ -5,14 +5,115 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.videoplayer_kt.databinding.FragmentChannelBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import androidx.core.widget.addTextChangedListener
+import com.example.videoplayer_kt.domain.models.Channel
+import com.google.android.material.chip.Chip
 
+@AndroidEntryPoint
 class ChannelFragment: Fragment() {
+    private var playlistId: Long = -1L
+    private var _binding: FragmentChannelBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: ChannelViewModel by viewModels()
+    private val adapter = ChannelAdapter()
+    private var chipsInitialized = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
+    ): View {
+        _binding = FragmentChannelBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        playlistId = arguments?.getLong("playlistId") ?: -1L
+        viewModel.loadChannel(playlistId)
+        setupRecyclerView()
+        setupSearchBar()
+        observeViewModel()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun setupRecyclerView(){
+        binding.rvChannels.adapter = adapter
+        binding.rvChannels.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                when (state) {
+                    is ChannelUiState.Loading -> {
+                        binding.pbChannels.visibility = View.VISIBLE
+                        binding.rvChannels.visibility = View.GONE
+                        binding.tvErrorChannels.visibility = View.GONE
+                    }
+                    is ChannelUiState.Success -> {
+                        binding.pbChannels.visibility = View.GONE
+                        binding.rvChannels.visibility = View.VISIBLE
+                        binding.tvErrorChannels.visibility = View.GONE
+                        adapter.submitList(state.channels)
+                        if (!chipsInitialized) {
+                            setupChipGroup(state.channels)
+                            chipsInitialized = true
+                        }
+                    }
+                    is ChannelUiState.Error -> {
+                        binding.pbChannels.visibility = View.GONE
+                        binding.rvChannels.visibility = View.GONE
+                        binding.tvErrorChannels.visibility = View.VISIBLE
+                        binding.tvErrorChannels.text = state.message
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupSearchBar() {
+        binding.etSearchChannel.addTextChangedListener { text ->
+            viewModel.searchChannels(text.toString())
+        }
+    }
+
+    private fun setupChipGroup(channels: List<Channel>) {
+        val groups = channels.mapNotNull { it.group }.distinct()
+
+        binding.chipGroupCategories.removeAllViews()
+
+        // Chip de "Todos"
+        val allChip = Chip(requireContext()).apply {
+            text = "Todos"
+            isCheckable = true
+            isChecked = true
+        }
+        allChip.setOnClickListener {
+            viewModel.filterByGroup(null)
+        }
+        binding.chipGroupCategories.addView(allChip)
+
+        // Un chip por cada grupo
+        groups.forEach { group ->
+            val chip = Chip(requireContext()).apply {
+                text = group
+                isCheckable = true
+            }
+            chip.setOnClickListener {
+                viewModel.filterByGroup(group)
+            }
+            binding.chipGroupCategories.addView(chip)
+        }
     }
 }

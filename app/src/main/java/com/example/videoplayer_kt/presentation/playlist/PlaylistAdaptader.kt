@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.videoplayer_kt.databinding.ItemPlaylistBinding
 import com.example.videoplayer_kt.domain.models.Playlist
 
-class PlaylistAdapter : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder>(DiffCallback()) {
+class PlaylistAdapter(
+    private val onPlaylistClick: (Playlist) -> Unit
+) : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder>(DiffCallback()) {
 
     inner class PlaylistViewHolder(
         private val binding: ItemPlaylistBinding
@@ -16,6 +18,9 @@ class PlaylistAdapter : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder
         fun bind(playlist: Playlist) {
             binding.tvPlaylistName.text = playlist.name
             binding.tvPlaylistUrl.text = playlist.url ?: "Local file"
+            binding.root.setOnClickListener {
+                onPlaylistClick(playlist)
+            }
         }
     }
 

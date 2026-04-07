@@ -17,6 +17,10 @@
         android:id="@+id/channelFragment"
         android:name="com.example.videoplayer_kt.presentation.channel.ChannelFragment"
         android:label="Channels" >
+        <argument
+            android:name="playlistId"
+            app:argType="long"
+            android:defaultValue="-1L" />
         <action
             android:id="@+id/action_channel_to_player"
             app:destination="@id/playerFragment" />

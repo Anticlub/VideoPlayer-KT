@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.navigation.safeargs)
 }
 
 android {
@@ -62,6 +63,8 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    //Coil
+    implementation(libs.coil)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
