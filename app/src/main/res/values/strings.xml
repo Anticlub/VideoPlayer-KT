@@ -2,4 +2,6 @@
     <string name="app_name">VideoPlayer-KT</string>
     <!-- Playlist Screen -->
     <string name="add_playlist">Add playlist</string>
+    <string name="hint_playlist_name">Añadir nombre</string>
+    <string name="hint_playlist_url">Añadir URL</string>
 </resources>
