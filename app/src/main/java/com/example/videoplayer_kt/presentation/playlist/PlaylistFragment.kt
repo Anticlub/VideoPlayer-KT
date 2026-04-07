@@ -41,8 +41,26 @@ class PlaylistFragment: Fragment() {
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.playlists.collect { playlists ->
-                adapter.submitList(playlists)
+            viewModel.uiState.collect { state ->
+                when (state) {
+                    is PlaylistUiState.Loading -> {
+                        binding.pbPlaylist.visibility = View.VISIBLE
+                        binding.rvPlaylist.visibility = View.GONE
+                        binding.tvErrorPlaylist.visibility = View.GONE
+                    }
+                    is PlaylistUiState.Success -> {
+                        binding.pbPlaylist.visibility = View.GONE
+                        binding.rvPlaylist.visibility = View.VISIBLE
+                        binding.tvErrorPlaylist.visibility = View.GONE
+                        adapter.submitList(state.playlists)
+                    }
+                    is PlaylistUiState.Error -> {
+                        binding.pbPlaylist.visibility = View.GONE
+                        binding.rvPlaylist.visibility = View.GONE
+                        binding.tvErrorPlaylist.visibility = View.VISIBLE
+                        binding.tvErrorPlaylist.text = state.message
+                    }
+                }
             }
         }
     }

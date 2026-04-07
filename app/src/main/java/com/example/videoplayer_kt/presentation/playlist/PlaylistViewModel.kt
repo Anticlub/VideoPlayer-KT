@@ -23,8 +23,8 @@ class PlaylistViewModel @Inject constructor(
 ): ViewModel() {
 
     // Estado de la lista de playlist, solo el viewmodel puede modificarlo
-    private val _playlists = MutableStateFlow<List<Playlist>>(emptyList())
-    val playlists: StateFlow<List<Playlist>> = _playlists.asStateFlow()
+    private val _uiState = MutableStateFlow<PlaylistUiState>(PlaylistUiState.Loading)
+    val uiState: StateFlow<PlaylistUiState> = _uiState.asStateFlow()
 
     init {
         loadPlaylists()
@@ -32,9 +32,15 @@ class PlaylistViewModel @Inject constructor(
 
     private fun loadPlaylists() {
         viewModelScope.launch {
-            getPlaylistUseCase().collect { list ->
-                _playlists.value = list
+            _uiState.value = PlaylistUiState.Loading
+            try {
+                getPlaylistUseCase().collect { list ->
+                    _uiState.value = PlaylistUiState.Success(list)
+                }
+            } catch (e: Exception) {
+                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
             }
+
         }
     }
 
