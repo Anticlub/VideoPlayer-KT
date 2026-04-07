@@ -20,7 +20,7 @@
         <argument
             android:name="playlistId"
             app:argType="long"
-            android:defaultValue="-1" />
+            android:defaultValue="-1L" />
         <action
             android:id="@+id/action_channel_to_player"
             app:destination="@id/playerFragment" />
