@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">VideoPlayer-KT</string>
+    <!-- Playlist Screen -->
+    <string name="add_playlist">Add playlist</string>
 </resources>
