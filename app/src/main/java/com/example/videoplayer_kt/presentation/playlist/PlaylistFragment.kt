@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,11 +25,55 @@ class PlaylistFragment: Fragment() {
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModels()
-    private val adapter = PlaylistAdapter { playlist ->
-        val action = PlaylistFragmentDirections
-            .actionPlaylistToChannel(playlist.id)
-        findNavController().navigate(action)
-    }
+    private val adapter = PlaylistAdapter(
+
+        { playlist ->
+            val action = PlaylistFragmentDirections
+                .actionPlaylistToChannel(playlist.id)
+            findNavController().navigate(action)
+        },
+        { playlist ->
+            AlertDialog.Builder(requireContext())
+                .setTitle(playlist.name)
+                .setItems(arrayOf("Editar", "Eliminar")) {_, index ->
+                    when (index) {
+                        0 -> {
+                            val dialogBinding = DialogAddPlaylistBinding.inflate(layoutInflater)
+                            dialogBinding.etPlaylistName.setText(playlist.name)
+                            dialogBinding.etPlaylistUrl.setText(playlist.url)
+                            AlertDialog.Builder(requireContext())
+                                .setTitle(playlist.name)
+                                .setView(dialogBinding.root)
+                                .setPositiveButton("Editar") {_,_ ->
+                                    val updated = playlist.copy(
+                                        name = dialogBinding.etPlaylistName.text.toString().trim(),
+                                        url = dialogBinding.etPlaylistUrl.text.toString().trim()
+                                    )
+                                    viewModel.editPlaylist(updated)
+                                }
+                                .setNegativeButton("Cancelar") {_,_ ->
+                                    null
+                                }
+                                .show()
+                        }
+                        1 -> {
+                            AlertDialog.Builder(requireContext())
+                                .setTitle("Eliminar ${playlist.name}")
+                                .setMessage("¿Seguro que quiere eliminar la playlist?")
+                                .setPositiveButton("Aceptar") {dialog, id ->
+                                    viewModel.deletePlaylist(playlist)
+                                }
+                                .setNegativeButton("Cancelar") {dialog, id ->
+                                    null
+                                }
+                                .show()
+                        }
+                    }
+                }
+                .show()
+            true
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

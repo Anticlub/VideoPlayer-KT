@@ -72,4 +72,10 @@ class PlaylistViewModel @Inject constructor(
             parsePlaylistUseCase(content, playlistId)
         }
     }
+
+    fun editPlaylist(playlist: Playlist){
+        viewModelScope.launch {
+            insertPlaylisUseCase(playlist)
+        }
+    }
 }

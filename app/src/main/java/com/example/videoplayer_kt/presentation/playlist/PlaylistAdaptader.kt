@@ -9,7 +9,8 @@ import com.example.videoplayer_kt.databinding.ItemPlaylistBinding
 import com.example.videoplayer_kt.domain.models.Playlist
 
 class PlaylistAdapter(
-    private val onPlaylistClick: (Playlist) -> Unit
+    private val onPlaylistClick: (Playlist) -> Unit,
+    private val onPlaylistLongClick: (Playlist) -> Boolean
 ) : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder>(DiffCallback()) {
 
     inner class PlaylistViewHolder(
@@ -20,6 +21,9 @@ class PlaylistAdapter(
             binding.tvPlaylistUrl.text = playlist.url ?: "Local file"
             binding.root.setOnClickListener {
                 onPlaylistClick(playlist)
+            }
+            binding.root.setOnLongClickListener {
+                onPlaylistLongClick(playlist)
             }
         }
     }
