@@ -47,10 +47,10 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     // Coroutines
     implementation(libs.coroutines.android)
-    // ExoPlayer
-    implementation(libs.exoplayer.core)
-    implementation(libs.exoplayer.hls)
-    implementation(libs.exoplayer.ui)
+    // Media3
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.hls)
+    implementation(libs.media3.ui)
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.scalar)

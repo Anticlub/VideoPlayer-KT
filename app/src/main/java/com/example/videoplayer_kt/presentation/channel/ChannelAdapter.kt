@@ -9,7 +9,9 @@ import coil.load
 import com.example.videoplayer_kt.databinding.ItemChannelBinding
 import com.example.videoplayer_kt.domain.models.Channel
 
-class ChannelAdapter : ListAdapter<Channel, ChannelAdapter.ChannelViewHolder>(DiffCallback()) {
+class ChannelAdapter(
+    private val onChannelClick: (Channel) -> Unit
+) : ListAdapter<Channel, ChannelAdapter.ChannelViewHolder>(DiffCallback()) {
 
     inner class ChannelViewHolder(
         private val binding: ItemChannelBinding
@@ -18,6 +20,9 @@ class ChannelAdapter : ListAdapter<Channel, ChannelAdapter.ChannelViewHolder>(Di
             binding.tvChannelName.text = channel.name
             binding.tvChannelGroup.text = channel.group ?: "Sin grupo"
             binding.ivChannelIcon.load(channel.logo)
+            binding.root.setOnClickListener {
+                onChannelClick(channel)
+            }
         }
     }
 
