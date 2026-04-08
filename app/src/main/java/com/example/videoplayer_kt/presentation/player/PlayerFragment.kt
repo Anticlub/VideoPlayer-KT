@@ -45,10 +45,10 @@ class PlayerFragment: Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        exitFullScreen()
         player?.release()
         player = null
         _binding = null
-        exitFullScreen()
     }
 
     override fun onPause() {
