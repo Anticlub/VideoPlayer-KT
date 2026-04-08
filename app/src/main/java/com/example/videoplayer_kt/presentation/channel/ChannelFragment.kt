@@ -12,6 +12,7 @@ import com.example.videoplayer_kt.databinding.FragmentChannelBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.core.widget.addTextChangedListener
+import androidx.navigation.fragment.findNavController
 import com.example.videoplayer_kt.domain.models.Channel
 import com.google.android.material.chip.Chip
 
@@ -21,7 +22,11 @@ class ChannelFragment: Fragment() {
     private var _binding: FragmentChannelBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChannelViewModel by viewModels()
-    private val adapter = ChannelAdapter()
+    private val adapter = ChannelAdapter { channel ->
+        val action = ChannelFragmentDirections
+            .actionChannelToPlayer(channel.url)
+        findNavController().navigate(action)
+    }
     private var chipsInitialized = false
 
     override fun onCreateView(
