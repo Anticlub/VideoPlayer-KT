@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
-import com.google.android.exoplayer2.ExoPlayer
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PlayerFragment: Fragment() {
@@ -32,14 +36,53 @@ class PlayerFragment: Fragment() {
         val args = PlayerFragmentArgs.fromBundle(requireArguments())
         val streamUrl = args.streamUrl
         viewModel.initPlayer(streamUrl)
+        setupPlayer(streamUrl)
+        observeViewModel()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        player?.release()
+        player = null
         _binding = null
     }
 
-    private fun setupPlayer(url: String){
+    override fun onPause() {
+        super.onPause()
+        player?.pause()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        player?.play()
+    }
+
+    private fun setupPlayer(url: String){
+        player = ExoPlayer.Builder(requireContext()).build()
+        binding.playerView.player = player
+        val mediaItem = MediaItem.fromUri(url)
+        player?.setMediaItem(mediaItem)
+        player?.prepare()
+        player?.playWhenReady = true
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                when (state){
+                    is PlayerUiState.Loading -> {
+                        binding.pbPlayer.visibility = View.VISIBLE
+                    }
+                    is PlayerUiState.Playing -> {
+                        binding.pbPlayer.visibility = View.GONE
+                    }
+                    is PlayerUiState.Error -> {
+                        binding.pbPlayer.visibility = View.GONE
+                        Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
     }
 }
