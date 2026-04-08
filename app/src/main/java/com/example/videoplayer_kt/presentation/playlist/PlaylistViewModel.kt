@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.domain.models.Playlist
 import com.example.videoplayer_kt.domain.usecases.DeletePlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.FetchPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.GetPlaylistUseCase
-import com.example.videoplayer_kt.domain.usecases.InsertPlaylisUseCase
+import com.example.videoplayer_kt.domain.usecases.InsertPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.ParsePlaylistUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +18,10 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val getPlaylistUseCase: GetPlaylistUseCase,
-    private val insertPlaylisUseCase: InsertPlaylisUseCase,
+    private val insertPlaylisUseCase: InsertPlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
-    private val parsePlaylistUseCase: ParsePlaylistUseCase
+    private val parsePlaylistUseCase: ParsePlaylistUseCase,
+    private val fetchPlaylistUseCase: FetchPlaylistUseCase
 ): ViewModel() {
 
     // Estado de la lista de playlist, solo el viewmodel puede modificarlo
@@ -46,7 +48,16 @@ class PlaylistViewModel @Inject constructor(
 
     fun insertPlaylist(playlist: Playlist) {
         viewModelScope.launch {
-            insertPlaylisUseCase(playlist)
+            try {
+                // 1. Insertar la playlist y obtener el id generado
+                val playlistId = insertPlaylisUseCase(playlist)
+                // 2. Descargar el contenido de la URL
+                val content = fetchPlaylistUseCase(playlist.url ?: "")
+                // 3. Parsear y guardar los canales
+                parsePlaylistUseCase(content, playlistId)
+            } catch (e: Exception) {
+                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+            }
         }
     }
 

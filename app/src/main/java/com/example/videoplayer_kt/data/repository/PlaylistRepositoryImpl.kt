@@ -18,9 +18,9 @@ class PlaylistRepositoryImpl @Inject constructor (private val playlistDao: Playl
             }
     }
 
-    override suspend fun insertPlaylist(playlist: Playlist) {
+    override suspend fun insertPlaylist(playlist: Playlist): Long {
         val entities = playlist.toEntity()
-        playlistDao.insertPlaylist(entities)
+        return playlistDao.insertPlaylist(entities)
     }
 
     override suspend fun getPlaylistById(playlistId: Long): Playlist? {
