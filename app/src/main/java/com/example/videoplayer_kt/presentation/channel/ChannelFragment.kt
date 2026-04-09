@@ -27,7 +27,6 @@ class ChannelFragment: Fragment() {
             .actionChannelToPlayer(channel.url)
         findNavController().navigate(action)
     }
-    private var chipsInitialized = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,10 +70,7 @@ class ChannelFragment: Fragment() {
                         binding.rvChannels.visibility = View.VISIBLE
                         binding.tvErrorChannels.visibility = View.GONE
                         adapter.submitList(state.channels)
-                        if (!chipsInitialized) {
-                            setupChipGroup(state.channels)
-                            chipsInitialized = true
-                        }
+                        setupChipGroup(state.channels)
                     }
                     is ChannelUiState.Error -> {
                         binding.pbChannels.visibility = View.GONE
@@ -111,7 +107,7 @@ class ChannelFragment: Fragment() {
 
         // Un chip por cada grupo
         groups.forEach { group ->
-            val chip = Chip(requireContext()).apply {
+            val chip = Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
                 text = group
                 isCheckable = true
             }

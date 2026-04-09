@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.domain.models.Channel
 import com.example.videoplayer_kt.domain.usecases.GetChannelsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.internal.checkOffsetAndCount
 import javax.inject.Inject
 
@@ -40,24 +42,29 @@ class ChannelViewModel @Inject constructor(
     }
 
     fun searchChannels(query: String) {
-        val filtered = allChannels.filter { channel ->
-            val matchesQuery = query.isEmpty() ||
-                    channel.name.contains(query, ignoreCase = true)
-            val matchesGroup = selectedGroup == null ||
-                    channel.group == selectedGroup
-            matchesQuery && matchesGroup
+        _uiState.value = ChannelUiState.Loading
+        viewModelScope.launch (Dispatchers.Default){
+            val filtered = allChannels.filter { channel ->
+                val matchesQuery = query.isEmpty() ||
+                        channel.name.contains(query, ignoreCase = true)
+                val matchesGroup = selectedGroup == null ||
+                        channel.group == selectedGroup
+                matchesQuery && matchesGroup
+            }
+            _uiState.value = ChannelUiState.Success(filtered)
         }
-        _uiState.value = ChannelUiState.Success(filtered)
     }
 
     fun filterByGroup(group: String?) {
         selectedGroup = group
-        val filtered = allChannels.filter { channel ->
-            val matchesGroup = group == null || channel.group == group
-            matchesGroup
+        _uiState.value = ChannelUiState.Loading
+        viewModelScope.launch(Dispatchers.Default) {
+            val filtered = allChannels.filter { channel ->
+                group == null || channel.group == group
+            }
+            withContext(Dispatchers.Main) {
+                _uiState.value = ChannelUiState.Success(filtered)
+            }
         }
-        _uiState.value = ChannelUiState.Success(filtered)
     }
-
-
 }
