@@ -10,7 +10,8 @@ fun PlaylistEntity.toDomain(): Playlist {
         name = name,
         url = url,
         type = PlaylistType.valueOf(type),
-        lastUpdated = lastUpdated
+        lastUpdated = lastUpdated,
+        hasChannels = hasChannels
     )
 }
 
@@ -20,6 +21,7 @@ fun Playlist.toEntity(): PlaylistEntity {
         name = name,
         url = url ?: "",
         type = type.name,
-        lastUpdated = lastUpdated
+        lastUpdated = lastUpdated,
+        hasChannels = hasChannels
     )
 }

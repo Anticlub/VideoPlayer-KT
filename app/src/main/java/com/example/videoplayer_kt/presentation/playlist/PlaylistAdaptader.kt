@@ -25,6 +25,7 @@ class PlaylistAdapter(
             binding.root.setOnLongClickListener {
                 onPlaylistLongClick(playlist)
             }
+            binding.root.alpha = if (playlist.hasChannels) 1.0f else 0.5f
         }
     }
 

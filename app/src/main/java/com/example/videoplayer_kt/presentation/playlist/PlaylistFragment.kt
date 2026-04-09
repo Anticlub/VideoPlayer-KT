@@ -16,6 +16,7 @@ import com.example.videoplayer_kt.databinding.DialogAddPlaylistBinding
 import com.example.videoplayer_kt.databinding.FragmentPlaylistBinding
 import com.example.videoplayer_kt.domain.models.Playlist
 import com.example.videoplayer_kt.domain.models.PlaylistType
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -28,9 +29,13 @@ class PlaylistFragment: Fragment() {
     private val adapter = PlaylistAdapter(
 
         { playlist ->
-            val action = PlaylistFragmentDirections
-                .actionPlaylistToChannel(playlist.id)
-            findNavController().navigate(action)
+            if(playlist.hasChannels){
+                val action = PlaylistFragmentDirections
+                    .actionPlaylistToChannel(playlist.id)
+                findNavController().navigate(action)
+            } else {
+                Snackbar.make(binding.root, "La playlist no tiene canales", Snackbar.LENGTH_SHORT).show()
+            }
         },
         { playlist ->
             AlertDialog.Builder(requireContext())
@@ -108,9 +113,9 @@ class PlaylistFragment: Fragment() {
                     }
                     is PlaylistUiState.Error -> {
                         binding.pbPlaylist.visibility = View.GONE
-                        binding.rvPlaylist.visibility = View.GONE
+                        binding.rvPlaylist.visibility = View.VISIBLE
                         binding.tvErrorPlaylist.visibility = View.VISIBLE
-                        binding.tvErrorPlaylist.text = state.message
+                        Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                     }
                 }
             }
