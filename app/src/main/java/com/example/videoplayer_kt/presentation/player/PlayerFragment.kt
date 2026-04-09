@@ -12,7 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.room.BuiltInTypeConverters
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -65,6 +68,7 @@ class PlayerFragment: Fragment() {
 
     private fun setupPlayer(url: String){
         player = ExoPlayer.Builder(requireContext()).build()
+        player?.addListener(createPlayerListener())
         binding.playerView.player = player
         binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
             if (isFullScreen) {
@@ -85,13 +89,21 @@ class PlayerFragment: Fragment() {
                 when (state){
                     is PlayerUiState.Loading -> {
                         binding.pbPlayer.visibility = View.VISIBLE
+                        binding.playerView.visibility = View.GONE
                     }
                     is PlayerUiState.Playing -> {
                         binding.pbPlayer.visibility = View.GONE
+                        binding.playerView.visibility = View.VISIBLE
+                    }
+                    is PlayerUiState.Ended -> {
+                        binding.playerView.visibility = View.GONE
+                        binding.pbPlayer.visibility = View.GONE
+                        binding.tvInfoPlayer.text = ""
                     }
                     is PlayerUiState.Error -> {
+                        binding.playerView.visibility = View.GONE
                         binding.pbPlayer.visibility = View.GONE
-                        Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        binding.tvInfoPlayer.text = state.message
                     }
                 }
 
@@ -110,5 +122,19 @@ class PlayerFragment: Fragment() {
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
         val controller = WindowInsetsControllerCompat(requireActivity().window, binding.root)
         controller.show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    private fun createPlayerListener() = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int){
+            when (playbackState) {
+                Player.STATE_BUFFERING -> viewModel.onBuffering()
+                Player.STATE_READY -> viewModel.onPlaying()
+                Player.STATE_ENDED -> {viewModel.onEnded()}
+                Player.STATE_IDLE -> {}
+            }
+        }
+        override fun onPlayerError(error: PlaybackException) {
+            viewModel.onError(error.localizedMessage ?: "Error desconocido")
+        }
     }
 }

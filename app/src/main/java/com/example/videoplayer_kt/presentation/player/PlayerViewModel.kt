@@ -19,7 +19,11 @@ class PlayerViewModel @Inject constructor(
 
     fun initPlayer(url: String) {
         viewModelScope.launch {
-            _uiState.value = PlayerUiState.Playing
+            _uiState.value = PlayerUiState.Loading
         }
     }
+    fun onBuffering() { _uiState.value = PlayerUiState.Loading }
+    fun onPlaying() { _uiState.value = PlayerUiState.Playing }
+    fun onEnded() { _uiState.value = PlayerUiState.Ended }
+    fun onError(message: String) { _uiState.value = PlayerUiState.Error(message) }
 }
