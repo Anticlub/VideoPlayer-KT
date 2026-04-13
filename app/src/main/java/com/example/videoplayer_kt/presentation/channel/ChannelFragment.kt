@@ -30,6 +30,7 @@ class ChannelFragment: Fragment() {
         {channel ->
             val action = ChannelFragmentDirections
                 .actionChannelToPlayer(channel.url, channel.name, channel.logo?: "", currentPlaylistName)
+            findNavController().navigate(action)
         },
         { channel ->
             viewModel.toggleFavorite(channel)
