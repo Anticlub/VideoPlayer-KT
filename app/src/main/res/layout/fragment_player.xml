@@ -8,6 +8,7 @@
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:resize_mode="fit"
         app:use_controller="true" />
 
     <ProgressBar
@@ -21,5 +22,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
+
+    <ImageButton
+        android:id="@+id/btn_aspect_ratio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_aspect_ratio"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        app:tint="@android:color/white" />
 
 </FrameLayout>

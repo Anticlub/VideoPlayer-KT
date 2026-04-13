@@ -15,13 +15,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
 import androidx.room.BuiltInTypeConverters
 import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@UnstableApi
 @AndroidEntryPoint
 class PlayerFragment: Fragment() {
 
@@ -29,6 +33,7 @@ class PlayerFragment: Fragment() {
     private val binding get() = _binding!!
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
+    private var currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +52,15 @@ class PlayerFragment: Fragment() {
         val streamLogo = args.streamLogo
         val streamPlyalistName = args.streamPlaylistName
         viewModel.initPlayer(streamUrl, streamName, streamLogo, streamPlyalistName)
+        binding.btnAspectRatio.setOnClickListener {
+            currentResizeMode = when (currentResizeMode) {
+
+                AspectRatioFrameLayout.RESIZE_MODE_FIT -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+                AspectRatioFrameLayout.RESIZE_MODE_FILL -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+            }
+            binding.playerView.resizeMode = currentResizeMode
+        }
         setupPlayer(streamUrl)
         observeViewModel()
     }
@@ -82,6 +96,11 @@ class PlayerFragment: Fragment() {
                 exitFullScreen()
             }
         }
+        binding.playerView.setControllerVisibilityListener(
+            PlayerView.ControllerVisibilityListener { visibility ->
+                _binding?.btnAspectRatio?.visibility = visibility
+            }
+        )
         val mediaItem = MediaItem.fromUri(url)
         player?.setMediaItem(mediaItem)
         player?.prepare()

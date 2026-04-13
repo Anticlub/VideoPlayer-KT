@@ -139,7 +139,7 @@ class PlaylistFragment: Fragment() {
 
                     binding.cvLastChannelPlaylist.setOnClickListener {
                         val action = PlaylistFragmentDirections
-                            .actionPlaylistToPlayer(state.url, state.name, state.logo)
+                            .actionPlaylistToPlayer(state.url, state.name, state.logo, state.playlistName)
                         findNavController().navigate(action)
                     }
                 } else {
