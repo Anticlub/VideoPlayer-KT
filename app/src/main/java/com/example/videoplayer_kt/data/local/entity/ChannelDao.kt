@@ -16,4 +16,10 @@ interface ChannelDao {
 
     @Query("DELETE FROM channels WHERE playlistId = :playlistId")
     suspend fun deleteChannelsByPlaylist(playlistId: Long)
+
+    @Query("SELECT * FROM channels WHERE isFavorite = 1")
+    fun getFavoriteChannels(): Flow<List<ChannelEntity>>
+
+    @Query("UPDATE channels SET isFavorite = :isFavorite WHERE id = :channelId")
+    suspend fun updateFavorites(channelId: Long, isFavorite: Boolean)
 }

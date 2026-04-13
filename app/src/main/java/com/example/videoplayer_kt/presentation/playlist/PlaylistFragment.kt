@@ -36,13 +36,13 @@ class PlaylistFragment: Fragment() {
                     .actionPlaylistToChannel(playlist.id)
                 findNavController().navigate(action)
             } else {
-                Snackbar.make(binding.root, "La playlist no tiene canales", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, getString(R.string.playlist_no_channels), Snackbar.LENGTH_SHORT).show()
             }
         },
         { playlist ->
             AlertDialog.Builder(requireContext())
                 .setTitle(playlist.name)
-                .setItems(arrayOf("Editar", "Eliminar")) {_, index ->
+                .setItems(arrayOf(getString(R.string.action_edit), getString(R.string.action_delete))) {_, index ->
                     when (index) {
                         0 -> {
                             val dialogBinding = DialogAddPlaylistBinding.inflate(layoutInflater)
@@ -51,26 +51,26 @@ class PlaylistFragment: Fragment() {
                             AlertDialog.Builder(requireContext())
                                 .setTitle(playlist.name)
                                 .setView(dialogBinding.root)
-                                .setPositiveButton("Editar") {_,_ ->
+                                .setPositiveButton(getString(R.string.action_edit)) {_,_ ->
                                     val updated = playlist.copy(
                                         name = dialogBinding.etPlaylistName.text.toString().trim(),
                                         url = dialogBinding.etPlaylistUrl.text.toString().trim()
                                     )
                                     viewModel.editPlaylist(updated)
                                 }
-                                .setNegativeButton("Cancelar") {_,_ ->
+                                .setNegativeButton(getString(R.string.action_cancel)) {_,_ ->
                                     null
                                 }
                                 .show()
                         }
                         1 -> {
                             AlertDialog.Builder(requireContext())
-                                .setTitle("Eliminar ${playlist.name}")
-                                .setMessage("¿Seguro que quiere eliminar la playlist?")
-                                .setPositiveButton("Aceptar") {dialog, id ->
+                                .setTitle(getString(R.string.title_delete_playlist, playlist.name))
+                                .setMessage(getString(R.string.confirm_delete_playlist))
+                                .setPositiveButton(getString(R.string.action_accept)) {dialog, id ->
                                     viewModel.deletePlaylist(playlist)
                                 }
-                                .setNegativeButton("Cancelar") {dialog, id ->
+                                .setNegativeButton(getString(R.string.action_cancel)) {dialog, id ->
                                     null
                                 }
                                 .show()

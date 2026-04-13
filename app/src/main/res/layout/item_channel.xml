@@ -22,8 +22,9 @@
             android:layout_marginEnd="12dp"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -42,6 +43,15 @@
                 tools:text="Channel group"/>
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_favorite_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_favorite"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="12dp"/>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

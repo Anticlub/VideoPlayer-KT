@@ -29,5 +29,18 @@ class ChannelRepositoryImpl @Inject constructor(private val channelDao: ChannelD
         channelDao.insertChannels(entities)
     }
 
+    override fun getFavoriteChannels(): Flow<List<Channel>> {
+        return channelDao.getFavoriteChannels()
+            .map { listOfEntities ->
+                listOfEntities.map { it.toDomain() }
+            }
+    }
 
+    override suspend fun addToFavorites(channels: Channel) {
+        channelDao.updateFavorites(channels.id, true)
+    }
+
+    override suspend fun removeFromFavorites(channel: Channel) {
+        channelDao.updateFavorites(channel.id, false)
+    }
 }

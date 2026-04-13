@@ -158,7 +158,7 @@ class PlayerFragment: Fragment() {
             }
         }
         override fun onPlayerError(error: PlaybackException) {
-            viewModel.onError(error.localizedMessage ?: "Error desconocido")
+            viewModel.onError(error.localizedMessage ?: requireContext().getString(R.string.unknown_error))
         }
     }
 }

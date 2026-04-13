@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.ItemPlaylistBinding
 import com.example.videoplayer_kt.domain.models.Playlist
 
@@ -18,7 +19,7 @@ class PlaylistAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(playlist: Playlist) {
             binding.tvPlaylistName.text = playlist.name
-            binding.tvPlaylistUrl.text = playlist.url ?: "Local file"
+            binding.tvPlaylistUrl.text = playlist.url ?: binding.root.context.getString(R.string.local_file)
             binding.root.setOnClickListener {
                 onPlaylistClick(playlist)
             }

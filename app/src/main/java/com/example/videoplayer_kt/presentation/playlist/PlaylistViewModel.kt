@@ -81,7 +81,6 @@ class PlaylistViewModel @Inject constructor(
                 val playlistId = insertPlaylisUseCase(playlist)
                 downloadAndParsePlaylist(playlist, playlistId)
             } catch (e: Exception) {
-                Log.e("PlaylistViewModel", "Error al insertar playlist: ${e.message}")
                 _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
             }
         }
