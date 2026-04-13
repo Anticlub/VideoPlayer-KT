@@ -76,7 +76,6 @@ class PlaylistViewModel @Inject constructor(
     }
 
     fun insertPlaylist(playlist: Playlist) {
-        Log.d("PlaylistViewModel", "insertPlaylist llamado: ${playlist.url}")
         viewModelScope.launch {
             try {
                 val playlistId = insertPlaylisUseCase(playlist)
@@ -96,7 +95,6 @@ class PlaylistViewModel @Inject constructor(
 
     private suspend fun downloadAndParsePlaylist(playlist: Playlist, playlistId: Long) {
         val content = fetchPlaylistUseCase(playlist.url ?: "")
-        Log.d("PlaylistViewModel", "Primeras letras: ${content.take(50)}")
         if (!content.trimStart().startsWith("#EXTM3U")){
             throw Exception("La URL no contiene una playlist M3U válida")
         }
@@ -104,9 +102,7 @@ class PlaylistViewModel @Inject constructor(
             id = playlistId,
             hasChannels = true
         )
-        Log.d("PlaylistViewModel", "Antes de parsear")
         insertPlaylisUseCase(updated)
-        Log.d("PlaylistViewModel", "Antes de parsePlaylistUseCase")
         parsePlaylistUseCase(content, playlistId)
     }
 

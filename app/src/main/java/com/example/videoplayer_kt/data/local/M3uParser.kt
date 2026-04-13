@@ -28,7 +28,6 @@ class M3uParser @Inject constructor(){
 
             }
         }
-        Log.d("M3uParser", "Canales encontrados: ${channels.size}")
         channels
     }
 

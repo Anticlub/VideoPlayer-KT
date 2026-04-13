@@ -46,7 +46,6 @@ class PlayerFragment: Fragment() {
         val streamName = args.streamName
         val streamLogo = args.streamLogo
         val streamPlyalistName = args.streamPlaylistName
-        Log.d("PlayerFragment", "Logo: $streamLogo")
         viewModel.initPlayer(streamUrl, streamName, streamLogo, streamPlyalistName)
         setupPlayer(streamUrl)
         observeViewModel()
