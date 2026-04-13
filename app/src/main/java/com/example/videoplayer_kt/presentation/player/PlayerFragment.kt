@@ -1,6 +1,7 @@
 package com.example.videoplayer_kt.presentation.player
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.BuiltInTypeConverters
+import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,7 +43,11 @@ class PlayerFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val args = PlayerFragmentArgs.fromBundle(requireArguments())
         val streamUrl = args.streamUrl
-        viewModel.initPlayer(streamUrl)
+        val streamName = args.streamName
+        val streamLogo = args.streamLogo
+        val streamPlyalistName = args.streamPlaylistName
+        Log.d("PlayerFragment", "Logo: $streamLogo")
+        viewModel.initPlayer(streamUrl, streamName, streamLogo, streamPlyalistName)
         setupPlayer(streamUrl)
         observeViewModel()
     }

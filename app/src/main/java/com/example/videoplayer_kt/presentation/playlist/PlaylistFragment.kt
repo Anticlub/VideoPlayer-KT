@@ -1,5 +1,6 @@
 package com.example.videoplayer_kt.presentation.playlist
 
+import android.R.attr.logo
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.DialogAddPlaylistBinding
 import com.example.videoplayer_kt.databinding.FragmentPlaylistBinding
@@ -18,6 +20,7 @@ import com.example.videoplayer_kt.domain.models.Playlist
 import com.example.videoplayer_kt.domain.models.PlaylistType
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -27,7 +30,6 @@ class PlaylistFragment: Fragment() {
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModels()
     private val adapter = PlaylistAdapter(
-
         { playlist ->
             if(playlist.hasChannels){
                 val action = PlaylistFragmentDirections
@@ -117,6 +119,31 @@ class PlaylistFragment: Fragment() {
                         binding.tvErrorPlaylist.visibility = View.VISIBLE
                         Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                     }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            combine(
+                viewModel.lastChannelUrl,
+                viewModel.lasChannelName,
+                viewModel.lastChannelLogo,
+                viewModel.lastChannelPlaylistName,
+            ) { url, name, logo, playlistName ->
+                LastChannelState(url,name, logo, playlistName)
+            }.collect { state ->
+                if (state.url.isNotEmpty()) {
+                    binding.cvLastChannelPlaylist.visibility = View.VISIBLE
+                    binding.tvLastChannelName.text = state.name
+                    binding.ivLastChannelIcon.load(state.logo)
+                    binding.tvLastChannelPlaylistname.text = state.playlistName
+
+                    binding.cvLastChannelPlaylist.setOnClickListener {
+                        val action = PlaylistFragmentDirections
+                            .actionPlaylistToPlayer(state.url, state.name, state.logo)
+                        findNavController().navigate(action)
+                    }
+                } else {
+                    binding.cvLastChannelPlaylist.visibility = View.GONE
                 }
             }
         }

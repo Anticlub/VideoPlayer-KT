@@ -66,6 +66,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     //Coil
     implementation(libs.coil)
+    //Datastore
+    implementation(libs.datastore)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -19,12 +19,13 @@ import com.google.android.material.chip.Chip
 @AndroidEntryPoint
 class ChannelFragment: Fragment() {
     private var playlistId: Long = -1L
+    private var currentPlaylistName: String = ""
     private var _binding: FragmentChannelBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChannelViewModel by viewModels()
     private val adapter = ChannelAdapter { channel ->
         val action = ChannelFragmentDirections
-            .actionChannelToPlayer(channel.url)
+            .actionChannelToPlayer(channel.url, channel.name, channel.logo ?: "", currentPlaylistName)
         findNavController().navigate(action)
     }
 
@@ -79,6 +80,11 @@ class ChannelFragment: Fragment() {
                         binding.tvErrorChannels.text = state.message
                     }
                 }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.playlistName.collect { name ->
+                currentPlaylistName = name
             }
         }
     }

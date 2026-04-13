@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.domain.models.Channel
 import com.example.videoplayer_kt.domain.usecases.GetChannelsUseCase
+import com.example.videoplayer_kt.domain.usecases.GetPlaylistByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,17 +18,22 @@ import javax.inject.Inject
 @HiltViewModel
 class ChannelViewModel @Inject constructor(
 
-    private val getChannelsUseCase: GetChannelsUseCase
+    private val getChannelsUseCase: GetChannelsUseCase,
+    private val getPlaylistByIdUseCase: GetPlaylistByIdUseCase
 
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChannelUiState>(ChannelUiState.Loading)
+    private val _playlistName = MutableStateFlow("")
     val uiState: StateFlow<ChannelUiState> = _uiState.asStateFlow()
+    val playlistName: StateFlow<String> = _playlistName.asStateFlow()
     private var allChannels: List<Channel> = emptyList()
     private var selectedGroup: String? = null
 
 
+
      fun loadChannel(playlistId: Long) {
+         getPlaylistName(playlistId)
         viewModelScope.launch {
             _uiState.value = ChannelUiState.Loading
             try {
@@ -65,6 +71,13 @@ class ChannelViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 _uiState.value = ChannelUiState.Success(filtered)
             }
+        }
+    }
+
+    fun getPlaylistName(playlistId: Long) {
+        viewModelScope.launch {
+            val playlist = getPlaylistByIdUseCase(playlistId)
+            _playlistName.value = playlist?.name ?: ""
         }
     }
 }
