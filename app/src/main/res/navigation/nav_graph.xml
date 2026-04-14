@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_playlist_to_channel"
             app:destination="@id/channelFragment" />
+        <action
+            android:id="@+id/action_playlist_to_player"
+            app:destination="@+id/playerFragment"/>
     </fragment>
 
     <fragment
@@ -32,6 +35,18 @@
         android:label="Player">
         <argument
             android:name="streamUrl"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="streamName"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="streamLogo"
+            app:argType="string"
+            android:defaultValue=""/>
+        <argument
+            android:name="streamPlaylistName"
             app:argType="string"
             android:defaultValue=""/>
     </fragment>

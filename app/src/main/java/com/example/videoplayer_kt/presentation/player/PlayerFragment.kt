@@ -1,6 +1,7 @@
 package com.example.videoplayer_kt.presentation.player
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
+import androidx.room.BuiltInTypeConverters
+import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@UnstableApi
 @AndroidEntryPoint
 class PlayerFragment: Fragment() {
 
@@ -24,6 +33,7 @@ class PlayerFragment: Fragment() {
     private val binding get() = _binding!!
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
+    private var currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,17 +48,29 @@ class PlayerFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val args = PlayerFragmentArgs.fromBundle(requireArguments())
         val streamUrl = args.streamUrl
-        viewModel.initPlayer(streamUrl)
+        val streamName = args.streamName
+        val streamLogo = args.streamLogo
+        val streamPlyalistName = args.streamPlaylistName
+        viewModel.initPlayer(streamUrl, streamName, streamLogo, streamPlyalistName)
+        binding.btnAspectRatio.setOnClickListener {
+            currentResizeMode = when (currentResizeMode) {
+
+                AspectRatioFrameLayout.RESIZE_MODE_FIT -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+                AspectRatioFrameLayout.RESIZE_MODE_FILL -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+            }
+            binding.playerView.resizeMode = currentResizeMode
+        }
         setupPlayer(streamUrl)
         observeViewModel()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        exitFullScreen()
         player?.release()
         player = null
         _binding = null
-        exitFullScreen()
     }
 
     override fun onPause() {
@@ -65,6 +87,7 @@ class PlayerFragment: Fragment() {
 
     private fun setupPlayer(url: String){
         player = ExoPlayer.Builder(requireContext()).build()
+        player?.addListener(createPlayerListener())
         binding.playerView.player = player
         binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
             if (isFullScreen) {
@@ -73,6 +96,11 @@ class PlayerFragment: Fragment() {
                 exitFullScreen()
             }
         }
+        binding.playerView.setControllerVisibilityListener(
+            PlayerView.ControllerVisibilityListener { visibility ->
+                _binding?.btnAspectRatio?.visibility = visibility
+            }
+        )
         val mediaItem = MediaItem.fromUri(url)
         player?.setMediaItem(mediaItem)
         player?.prepare()
@@ -85,13 +113,21 @@ class PlayerFragment: Fragment() {
                 when (state){
                     is PlayerUiState.Loading -> {
                         binding.pbPlayer.visibility = View.VISIBLE
+                        binding.playerView.visibility = View.GONE
                     }
                     is PlayerUiState.Playing -> {
                         binding.pbPlayer.visibility = View.GONE
+                        binding.playerView.visibility = View.VISIBLE
+                    }
+                    is PlayerUiState.Ended -> {
+                        binding.playerView.visibility = View.GONE
+                        binding.pbPlayer.visibility = View.GONE
+                        binding.tvInfoPlayer.text = ""
                     }
                     is PlayerUiState.Error -> {
+                        binding.playerView.visibility = View.GONE
                         binding.pbPlayer.visibility = View.GONE
-                        Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        binding.tvInfoPlayer.text = state.message
                     }
                 }
 
@@ -110,5 +146,19 @@ class PlayerFragment: Fragment() {
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
         val controller = WindowInsetsControllerCompat(requireActivity().window, binding.root)
         controller.show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    private fun createPlayerListener() = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int){
+            when (playbackState) {
+                Player.STATE_BUFFERING -> viewModel.onBuffering()
+                Player.STATE_READY -> viewModel.onPlaying()
+                Player.STATE_ENDED -> {viewModel.onEnded()}
+                Player.STATE_IDLE -> {}
+            }
+        }
+        override fun onPlayerError(error: PlaybackException) {
+            viewModel.onError(error.localizedMessage ?: requireContext().getString(R.string.unknown_error))
+        }
     }
 }

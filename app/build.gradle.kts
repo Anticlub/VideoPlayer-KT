@@ -50,6 +50,7 @@ dependencies {
     // Media3
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.ui)
     // Retrofit
     implementation(libs.retrofit)
@@ -65,6 +66,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     //Coil
     implementation(libs.coil)
+    //Datastore
+    implementation(libs.datastore)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

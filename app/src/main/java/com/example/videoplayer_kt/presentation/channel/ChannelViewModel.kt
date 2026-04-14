@@ -3,29 +3,46 @@ package com.example.videoplayer_kt.presentation.channel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.domain.models.Channel
+import com.example.videoplayer_kt.domain.usecases.AddToFavoritesUseCase
 import com.example.videoplayer_kt.domain.usecases.GetChannelsUseCase
+import com.example.videoplayer_kt.domain.usecases.GetFavoriteChannelsUseCase
+import com.example.videoplayer_kt.domain.usecases.GetPlaylistByIdUseCase
+import com.example.videoplayer_kt.domain.usecases.RemoveFromFavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.internal.checkOffsetAndCount
 import javax.inject.Inject
 
 @HiltViewModel
 class ChannelViewModel @Inject constructor(
 
-    private val getChannelsUseCase: GetChannelsUseCase
+    private val getChannelsUseCase: GetChannelsUseCase,
+    private val getPlaylistByIdUseCase: GetPlaylistByIdUseCase,
+    private val addToFavoritesUseCase: AddToFavoritesUseCase,
+    private val getFavoriteChannelsUseCase: GetFavoriteChannelsUseCase,
+    private val removeFromFavoritesUseCase: RemoveFromFavoritesUseCase
 
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChannelUiState>(ChannelUiState.Loading)
+    private val _playlistName = MutableStateFlow("")
+    private val _favoritesChannels = MutableStateFlow<List<Channel>>(emptyList())
     val uiState: StateFlow<ChannelUiState> = _uiState.asStateFlow()
+    val playlistName: StateFlow<String> = _playlistName.asStateFlow()
+    val favoritesChannel: StateFlow<List<Channel>> = _favoritesChannels.asStateFlow()
     private var allChannels: List<Channel> = emptyList()
     private var selectedGroup: String? = null
 
 
+
      fun loadChannel(playlistId: Long) {
+         getPlaylistName(playlistId)
+         loadFavorites()
         viewModelScope.launch {
             _uiState.value = ChannelUiState.Loading
             try {
@@ -39,25 +56,65 @@ class ChannelViewModel @Inject constructor(
         }
     }
 
-    fun searchChannels(query: String) {
-        val filtered = allChannels.filter { channel ->
-            val matchesQuery = query.isEmpty() ||
-                    channel.name.contains(query, ignoreCase = true)
-            val matchesGroup = selectedGroup == null ||
-                    channel.group == selectedGroup
-            matchesQuery && matchesGroup
+    fun loadFavorites(){
+        viewModelScope.launch {
+            getFavoriteChannelsUseCase().collect { channels ->
+                _favoritesChannels.value = channels
+            }
         }
-        _uiState.value = ChannelUiState.Success(filtered)
+    }
+
+    fun searchChannels(query: String) {
+        _uiState.value = ChannelUiState.Loading
+        viewModelScope.launch (Dispatchers.Default){
+            val filtered = allChannels.filter { channel ->
+                val matchesQuery = query.isEmpty() ||
+                        channel.name.contains(query, ignoreCase = true)
+                val matchesGroup = selectedGroup == null ||
+                        channel.group == selectedGroup
+                matchesQuery && matchesGroup
+            }
+            _uiState.value = ChannelUiState.Success(filtered)
+        }
     }
 
     fun filterByGroup(group: String?) {
         selectedGroup = group
-        val filtered = allChannels.filter { channel ->
-            val matchesGroup = group == null || channel.group == group
-            matchesGroup
+        _uiState.value = ChannelUiState.Loading
+        viewModelScope.launch(Dispatchers.Default) {
+            val filtered = allChannels.filter { channel ->
+                group == null || channel.group == group
+            }
+            withContext(Dispatchers.Main) {
+                _uiState.value = ChannelUiState.Success(filtered)
+            }
         }
-        _uiState.value = ChannelUiState.Success(filtered)
     }
 
+    fun getPlaylistName(playlistId: Long) {
+        viewModelScope.launch {
+            val playlist = getPlaylistByIdUseCase(playlistId)
+            _playlistName.value = playlist?.name ?: ""
+        }
+    }
 
+    fun toggleFavorite(channel: Channel) {
+        viewModelScope.launch {
+            if (channel.isFavorite){
+                removeFromFavoritesUseCase(channel)
+            } else {
+                addToFavoritesUseCase(channel)
+        }
+        }
+    }
+
+    fun filterFavorites() {
+        _uiState.value = ChannelUiState.Loading
+        viewModelScope.launch(Dispatchers.Default) {
+            val filtered = allChannels.filter { it.isFavorite }
+            withContext(Dispatchers.Main) {
+                _uiState.value = ChannelUiState.Success(filtered)
+            }
+        }
+    }
 }

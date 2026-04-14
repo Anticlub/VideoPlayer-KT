@@ -7,4 +7,19 @@
     <string name="dialog_add_playlist_title">Añadir Playlist</string>
     <string name="dialog_add">Añadir</string>
     <string name="dialog_cancel">Cancelar</string>
+    <string name="local_file">Local file</string>
+    <string name="playlist_no_channels">La playlist no tiene canales</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_accept">Aceptar</string>
+    <string name="title_delete_playlist">Eliminar %s</string>
+    <string name="confirm_delete_playlist">¿Seguro que quiere eliminar la playlist?</string>
+    <!-- Player -->
+    <string name="video_ended">"Stream finalizado"</string>
+    <string name="unknown_error">Error desconocido</string>
+    <!-- Channel -->
+    <string name="all">Todos</string>
+    <string name="favorites">Favoritos</string>
+    <string name="no_group">Sin grupo</string>
 </resources>

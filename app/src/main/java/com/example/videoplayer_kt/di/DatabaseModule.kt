@@ -2,6 +2,7 @@ package com.example.videoplayer_kt.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.videoplayer_kt.data.local.UserPreferences
 import com.example.videoplayer_kt.data.local.entity.AppDatabase
 import com.example.videoplayer_kt.data.local.entity.ChannelDao
 import com.example.videoplayer_kt.data.local.entity.PlaylistDao
@@ -22,7 +23,8 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
     @Provides
     @Singleton
@@ -34,5 +36,11 @@ object DatabaseModule {
     @Singleton
     fun providePlaylistDao(database: AppDatabase): PlaylistDao {
         return database.playlistDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
+        return UserPreferences(context)
     }
 }

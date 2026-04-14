@@ -10,5 +10,6 @@ data class PlaylistEntity(
     val name: String,
     val url: String,
     val type: String, //m3u o m3u8
-    val lastUpdated: Long
+    val lastUpdated: Long,
+    val hasChannels: Boolean = false
 )
