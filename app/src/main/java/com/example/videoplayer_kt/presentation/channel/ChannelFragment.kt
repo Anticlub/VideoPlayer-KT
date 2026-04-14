@@ -136,6 +136,9 @@ class ChannelFragment: Fragment() {
             favoritesChip?.setOnClickListener { viewModel.filterFavorites() }
         }
         favoritesChip?.visibility = if (hasFavorites) View.VISIBLE else View.GONE
+        if (favoritesChip?.parent != null) {
+            (favoritesChip?.parent as? ViewGroup)?.removeView(favoritesChip)
+        }
         binding.chipGroupCategories.addView(favoritesChip)
 
         // Chips de grupos
