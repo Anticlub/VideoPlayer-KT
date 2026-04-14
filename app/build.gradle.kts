@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.navigation.safeargs)
 }
 
 android {
     namespace = "com.example.videoplayer_kt"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.videoplayer_kt"
@@ -33,9 +33,42 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlin {
+        jvmToolchain(11)
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
+    // Test
+    testImplementation(libs.kotlinx.coroutines.test)
+    // Coroutines
+    implementation(libs.coroutines.android)
+    // Media3
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer.dash)
+    implementation(libs.media3.ui)
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.scalar)
+    implementation(libs.okhttp.interceptor)
+    // Navigation
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    //Coil
+    implementation(libs.coil)
+    //Datastore
+    implementation(libs.datastore)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
