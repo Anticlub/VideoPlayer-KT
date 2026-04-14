@@ -25,7 +25,6 @@ class ChannelFragment: Fragment() {
     private var _binding: FragmentChannelBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChannelViewModel by viewModels()
-    private var favoritesChip: Chip? = null
     private val adapter = ChannelAdapter(
         {channel ->
             val action = ChannelFragmentDirections
@@ -95,15 +94,6 @@ class ChannelFragment: Fragment() {
                 currentPlaylistName = name
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.favoritesChannel.collect{ favorites ->
-                if (favorites.isEmpty()){
-                    favoritesChip?.visibility = View.GONE
-                } else {
-                    favoritesChip?.visibility = View.VISIBLE
-                }
-            }
-        }
     }
 
     private fun setupSearchBar() {
@@ -128,17 +118,12 @@ class ChannelFragment: Fragment() {
         binding.chipGroupCategories.addView(allChip)
 
         // Chip "Favoritos"
-        if (favoritesChip == null) {
-            favoritesChip = Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
-                text = context.getString(R.string.favorites)
-                isCheckable = true
-            }
-            favoritesChip?.setOnClickListener { viewModel.filterFavorites() }
+        val favoritesChip = Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
+            text= context.getString(R.string.favorites)
+            isCheckable = true
         }
-        favoritesChip?.visibility = if (hasFavorites) View.VISIBLE else View.GONE
-        if (favoritesChip?.parent != null) {
-            (favoritesChip?.parent as? ViewGroup)?.removeView(favoritesChip)
-        }
+        favoritesChip.setOnClickListener { viewModel.filterFavorites() }
+        favoritesChip.visibility = if (hasFavorites) View.VISIBLE else View.GONE
         binding.chipGroupCategories.addView(favoritesChip)
 
         // Chips de grupos

@@ -1,11 +1,9 @@
 package com.example.videoplayer_kt.presentation.player
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -19,7 +17,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import androidx.room.BuiltInTypeConverters
 import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
 import dagger.hilt.android.AndroidEntryPoint

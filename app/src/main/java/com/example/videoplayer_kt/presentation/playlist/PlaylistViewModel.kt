@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.data.local.UserPreferences
 import com.example.videoplayer_kt.domain.models.Playlist
+import com.example.videoplayer_kt.domain.usecases.ClearAllChannelsUseCase
 import com.example.videoplayer_kt.domain.usecases.DeletePlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.FetchPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.GetPlaylistByIdUseCase
@@ -28,7 +29,8 @@ class PlaylistViewModel @Inject constructor(
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
     private val parsePlaylistUseCase: ParsePlaylistUseCase,
     private val fetchPlaylistUseCase: FetchPlaylistUseCase,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val clearAllChannelsUseCase: ClearAllChannelsUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<PlaylistUiState>(PlaylistUiState.Loading)
@@ -93,6 +95,7 @@ class PlaylistViewModel @Inject constructor(
     }
 
     private suspend fun downloadAndParsePlaylist(playlist: Playlist, playlistId: Long) {
+        clearAllChannelsUseCase(playlistId)
         val content = fetchPlaylistUseCase(playlist.url ?: "")
         if (!content.trimStart().startsWith("#EXTM3U")){
             throw Exception("La URL no contiene una playlist M3U válida")
@@ -103,12 +106,6 @@ class PlaylistViewModel @Inject constructor(
         )
         insertPlaylisUseCase(updated)
         parsePlaylistUseCase(content, playlistId)
-    }
-
-    fun parsePlaylist(content: String, playlistId: Long) {
-        viewModelScope.launch {
-            parsePlaylistUseCase(content, playlistId)
-        }
     }
 
     fun editPlaylist(playlist: Playlist){
