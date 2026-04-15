@@ -3,47 +3,48 @@ package com.example.videoplayer_kt
 import android.app.PictureInPictureParams
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.Rational
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.videoplayer_kt.presentation.main.MainViewModel
 import com.example.videoplayer_kt.presentation.player.PlayerFragment
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.UnstableApi
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private val viewModel: MainViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        observeViewModel()
     }
 
-    // Se llama cuando el usuario pulsa el botón de inicio del móvil
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-        Log.d("MainActivity", "onUserLeaveHint llamado, isPlayerVisible: ${isPlayerVisible()}")
-        // Solo entramos en PiP si estamos en el PlayerFragment
-        if (isPlayerVisible()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            viewModel.pipEvent.collect {
                 val params = PictureInPictureParams.Builder()
-                    .setAspectRatio(Rational(16, 9))
+                    .setAspectRatio(Rational(16,9))
                     .build()
                 enterPictureInPictureMode(params)
             }
         }
-    }
-    override fun onStop() {
-        super.onStop()
-        Log.d("MainActivity", "onStop llamado, isPlayerVisible: ${isPlayerVisible()}")
+        val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        navHost?.childFragmentManager?.addOnBackStackChangedListener {
+            val isPlayer = navHost.childFragmentManager
+                .primaryNavigationFragment is PlayerFragment
+            viewModel.onFragmentChanged(isPlayer)
+        }
     }
 
-    // Comprueba si el fragment visible actualmente es el PlayerFragment
-    @OptIn(UnstableApi::class)
-    private fun isPlayerVisible(): Boolean {
-        val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-        return navHost?.childFragmentManager?.primaryNavigationFragment is PlayerFragment
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        viewModel.shouldEnterPip()
     }
 }
