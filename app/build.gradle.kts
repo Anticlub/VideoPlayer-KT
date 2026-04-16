@@ -47,6 +47,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     // Coroutines
     implementation(libs.coroutines.android)
+    implementation(libs.coroutines.play.services)
     // Media3
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
