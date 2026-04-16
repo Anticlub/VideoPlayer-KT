@@ -21,5 +21,3 @@ Pasos para obtenerlo:
 3. Seleccionar el proyecto → Configuración del proyecto → Tus apps → Android.
 4. Descargar el archivo `google-services.json`.
 5. Colocarlo en la ruta `app/google-services.json`.
-
-Si no tienes acceso al proyecto Firebase, contacta con el mantenedor del repositorio.
