@@ -18,6 +18,8 @@ room = "2.8.4"
 hilt = "2.51.1"
 coil = "2.7.0"
 datastore = "1.1.1"
+googleServices = "4.4.2"
+firebaseBom = "33.5.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +48,9 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
 coil = {group = "io.coil-kt", name = "coil", version.ref = "coil"}
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom"}
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx"}
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -53,3 +58,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version = "2.0.0-1.0.24" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt"}
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
+google-services = {id = "com.google.gms.google-services", version.ref = "googleServices"}

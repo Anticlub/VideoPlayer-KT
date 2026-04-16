@@ -68,6 +68,10 @@ dependencies {
     implementation(libs.coil)
     //Datastore
     implementation(libs.datastore)
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.analytics)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
