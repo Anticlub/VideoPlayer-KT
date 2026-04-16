@@ -3,6 +3,10 @@ package com.example.videoplayer_kt.di
 import android.content.Context
 import androidx.room.Room
 import com.example.videoplayer_kt.data.local.UserPreferences
+import com.example.videoplayer_kt.data.local.datasource.ChannelLocalDataSource
+import com.example.videoplayer_kt.data.local.datasource.ChannelLocalDataSourceImp
+import com.example.videoplayer_kt.data.local.datasource.PlaylistLocalDataSource
+import com.example.videoplayer_kt.data.local.datasource.PlaylistLocalDataSourceImpl
 import com.example.videoplayer_kt.data.local.entity.AppDatabase
 import com.example.videoplayer_kt.data.local.entity.ChannelDao
 import com.example.videoplayer_kt.data.local.entity.PlaylistDao
@@ -16,6 +20,19 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideChannelLocalDataSource(channelDao: ChannelDao): ChannelLocalDataSource {
+        return ChannelLocalDataSourceImp(channelDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlaylistLocalDataSource(playlistDao: PlaylistDao) : PlaylistLocalDataSource {
+        return PlaylistLocalDataSourceImpl(playlistDao)
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
