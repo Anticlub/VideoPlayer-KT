@@ -73,7 +73,9 @@ class PlayerFragment: Fragment() {
 
     override fun onPause() {
         super.onPause()
-        player?.pause()
+        if (!requireActivity().isInPictureInPictureMode) {
+            player?.pause()
+        }
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         exitFullScreen()
     }

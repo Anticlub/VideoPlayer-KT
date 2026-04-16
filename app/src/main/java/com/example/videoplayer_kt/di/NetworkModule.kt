@@ -1,6 +1,8 @@
 package com.example.videoplayer_kt.di
 
+import com.example.videoplayer_kt.data.remote.M3uRemoteDataSource
 import com.example.videoplayer_kt.data.remote.M3uService
+import com.example.videoplayer_kt.data.remote.datasource.RemoteDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +14,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataSource(service: M3uService): RemoteDataSource {
+        return M3uRemoteDataSource(service)
+    }
 
     @Provides
     @Singleton

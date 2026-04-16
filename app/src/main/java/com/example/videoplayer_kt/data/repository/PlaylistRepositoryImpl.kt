@@ -1,6 +1,6 @@
 package com.example.videoplayer_kt.data.repository
 
-import com.example.videoplayer_kt.data.local.entity.PlaylistDao
+import com.example.videoplayer_kt.data.local.datasource.PlaylistLocalDataSource
 import com.example.videoplayer_kt.data.mapper.toDomain
 import com.example.videoplayer_kt.data.mapper.toEntity
 import com.example.videoplayer_kt.domain.models.Playlist
@@ -9,10 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class PlaylistRepositoryImpl @Inject constructor (private val playlistDao: PlaylistDao) : PlaylistRepository{
+class PlaylistRepositoryImpl @Inject constructor (
+    private val localDataSource: PlaylistLocalDataSource
+) : PlaylistRepository{
 
     override fun getAllPlaylists(): Flow<List<Playlist>> {
-        return playlistDao.getAllPlaylists()
+        return localDataSource.getAllPlaylists()
             .map { allPlaylist ->
                 allPlaylist.map { it.toDomain() }
             }
@@ -20,15 +22,15 @@ class PlaylistRepositoryImpl @Inject constructor (private val playlistDao: Playl
 
     override suspend fun insertPlaylist(playlist: Playlist): Long {
         val entities = playlist.toEntity()
-        return playlistDao.insertPlaylist(entities)
+        return localDataSource.insertPlaylist(entities)
     }
 
     override suspend fun getPlaylistById(playlistId: Long): Playlist? {
-        return playlistDao.getPlaylistById(playlistId)?.toDomain()
+        return localDataSource.getPlaylistById(playlistId)?.toDomain()
     }
 
     override suspend fun deletePlaylist(playlist: Playlist) {
         val entities = playlist.toEntity()
-        playlistDao.deletePlaylist(entities)
+        localDataSource.deletePlaylist(entities)
     }
 }
