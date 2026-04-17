@@ -3,7 +3,7 @@ package com.example.videoplayer_kt.data.repository
 import com.example.videoplayer_kt.data.mapper.toDomain
 import com.example.videoplayer_kt.data.remote.datasource.AuthRemoteDataSource
 import com.example.videoplayer_kt.domain.models.AuthErrorType
-import com.example.videoplayer_kt.domain.models.AuthResult
+import com.example.videoplayer_kt.domain.models.DataResult
 import com.example.videoplayer_kt.domain.models.User
 import com.example.videoplayer_kt.domain.repository.AuthRepository
 import com.google.firebase.FirebaseNetworkException
@@ -21,47 +21,47 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(
         email: String,
         password: String
-    ): AuthResult<User> {
+    ): DataResult<User> {
         return try {
             val firebaseUser = remoteDataSource.login(email, password)
-            AuthResult.Success(firebaseUser.toDomain())
+            DataResult.Success(firebaseUser.toDomain())
         } catch (e: FirebaseAuthInvalidCredentialsException){
-            AuthResult.Error(AuthErrorType.INVALID_CREDENTIALS)
+            DataResult.Error(AuthErrorType.INVALID_CREDENTIALS)
         } catch (e: FirebaseAuthInvalidUserException){
-            AuthResult.Error(AuthErrorType.USER_NOT_FOUND)
+            DataResult.Error(AuthErrorType.USER_NOT_FOUND)
         } catch (e: FirebaseNetworkException){
-            AuthResult.Error(AuthErrorType.NETWORK_ERROR)
+            DataResult.Error(AuthErrorType.NETWORK_ERROR)
         } catch (e: Exception){
-            AuthResult.Error(AuthErrorType.UNKNOWN)
+            DataResult.Error(AuthErrorType.UNKNOWN)
         }
     }
 
     override suspend fun register(
         email: String,
         password: String
-    ): AuthResult<User> {
+    ): DataResult<User> {
         return try {
             val firebaseUser = remoteDataSource.register(email, password)
-            AuthResult.Success(firebaseUser.toDomain())
+            DataResult.Success(firebaseUser.toDomain())
         }catch (e: FirebaseAuthUserCollisionException){
-            AuthResult.Error(AuthErrorType.EMAIL_ALREADY_IN_USE)
+            DataResult.Error(AuthErrorType.EMAIL_ALREADY_IN_USE)
         } catch (e: FirebaseAuthWeakPasswordException){
-            AuthResult.Error(AuthErrorType.WEAK_PASSWORD)
+            DataResult.Error(AuthErrorType.WEAK_PASSWORD)
         } catch (e: FirebaseAuthInvalidCredentialsException){
-            AuthResult.Error(AuthErrorType.INVALID_EMAIL)
+            DataResult.Error(AuthErrorType.INVALID_EMAIL)
         } catch (e: FirebaseNetworkException){
-            AuthResult.Error(AuthErrorType.NETWORK_ERROR)
+            DataResult.Error(AuthErrorType.NETWORK_ERROR)
         } catch (e: Exception){
-            AuthResult.Error(AuthErrorType.UNKNOWN)
+            DataResult.Error(AuthErrorType.UNKNOWN)
         }
     }
 
-    override suspend fun logout(): AuthResult<Unit> {
+    override suspend fun logout(): DataResult<Unit> {
         return try {
             remoteDataSource.logout()
-            AuthResult.Success(Unit)
+            DataResult.Success(Unit)
         } catch (e: Exception){
-            AuthResult.Error(AuthErrorType.UNKNOWN)
+            DataResult.Error(AuthErrorType.UNKNOWN)
         }
     }
 

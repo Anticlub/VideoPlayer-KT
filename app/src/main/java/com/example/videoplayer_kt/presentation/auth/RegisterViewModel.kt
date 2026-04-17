@@ -2,7 +2,7 @@ package com.example.videoplayer_kt.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.videoplayer_kt.domain.models.AuthResult
+import com.example.videoplayer_kt.domain.models.DataResult
 import com.example.videoplayer_kt.domain.usecases.auth.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +22,8 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = registerUseCase(email, password)) {
-                is AuthResult.Success -> _uiState.value = AuthUiState.Success
-                is AuthResult.Error -> _uiState.value = AuthUiState.Error(result.type)
+                is DataResult.Success -> _uiState.value = AuthUiState.Success
+                is DataResult.Error -> _uiState.value = AuthUiState.Error(result.type)
             }
         }
     }
