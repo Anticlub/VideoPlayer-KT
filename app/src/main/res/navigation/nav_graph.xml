@@ -60,6 +60,11 @@
         <action
             android:id="@+id/action_playlist_to_player"
             app:destination="@+id/playerFragment"/>
+        <action
+            android:id="@+id/action_playlist_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true"/>
     </fragment>
 
     <fragment

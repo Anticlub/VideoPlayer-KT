@@ -11,6 +11,7 @@ import com.example.videoplayer_kt.domain.usecases.FetchPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.GetPlaylistByIdUseCase
 import com.example.videoplayer_kt.domain.usecases.GetPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.InsertPlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.LogoutUseCase
 import com.example.videoplayer_kt.domain.usecases.ParsePlaylistUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,8 @@ class PlaylistViewModel @Inject constructor(
     private val parsePlaylistUseCase: ParsePlaylistUseCase,
     private val fetchPlaylistUseCase: FetchPlaylistUseCase,
     private val userPreferences: UserPreferences,
-    private val clearAllChannelsUseCase: ClearAllChannelsUseCase
+    private val clearAllChannelsUseCase: ClearAllChannelsUseCase,
+    private val logoutUseCase: LogoutUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<PlaylistUiState>(PlaylistUiState.Loading)
@@ -119,6 +121,12 @@ class PlaylistViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            logoutUseCase()
         }
     }
 }

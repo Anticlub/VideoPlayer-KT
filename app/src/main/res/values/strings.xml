@@ -42,4 +42,6 @@
     <string name="action_register">Registrarse</string>
     <string name="go_to_login">¿Ya tienes cuenta? Inicia sesión</string>
     <string name="auth_error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <!-- menu -->
+    <string name="action_logout">Cerrar sesión</string>
 </resources>
