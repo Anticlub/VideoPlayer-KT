@@ -3,11 +3,11 @@ package com.example.videoplayer_kt.presentation.channel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.domain.models.Channel
-import com.example.videoplayer_kt.domain.usecases.AddToFavoritesUseCase
-import com.example.videoplayer_kt.domain.usecases.GetChannelsUseCase
-import com.example.videoplayer_kt.domain.usecases.GetFavoriteChannelsUseCase
-import com.example.videoplayer_kt.domain.usecases.GetPlaylistByIdUseCase
-import com.example.videoplayer_kt.domain.usecases.RemoveFromFavoritesUseCase
+import com.example.videoplayer_kt.domain.usecases.channel.AddToFavoritesUseCase
+import com.example.videoplayer_kt.domain.usecases.channel.GetChannelsUseCase
+import com.example.videoplayer_kt.domain.usecases.channel.GetFavoriteChannelsUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistByIdUseCase
+import com.example.videoplayer_kt.domain.usecases.channel.RemoveFromFavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

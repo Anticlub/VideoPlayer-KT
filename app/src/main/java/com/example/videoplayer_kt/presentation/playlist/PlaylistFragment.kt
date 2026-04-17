@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -96,6 +97,7 @@ class PlaylistFragment: Fragment() {
         setupRecyclerView()
         observeViewModel()
         setupFab()
+        setupMenu()
     }
 
     private fun observeViewModel() {
@@ -186,5 +188,23 @@ class PlaylistFragment: Fragment() {
             }
             .setNegativeButton(R.string.dialog_cancel, null)
             .show()
+    }
+
+    private fun setupMenu() {
+        binding.btnMenu.setOnClickListener { view ->
+            val popup = PopupMenu(requireContext(), view)
+            popup.menuInflater.inflate(R.menu.menu_playlist, popup.menu)
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_logout -> {
+                        viewModel.logout()
+                        findNavController().navigate(R.id.action_playlist_to_login)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
     }
 }

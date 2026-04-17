@@ -1,4 +1,4 @@
-package com.example.videoplayer_kt.domain.usecases
+package com.example.videoplayer_kt.domain.usecases.channel
 
 import com.example.videoplayer_kt.domain.repository.ChannelRepository
 import javax.inject.Inject

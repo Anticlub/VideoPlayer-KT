@@ -22,4 +22,26 @@
     <string name="all">Todos</string>
     <string name="favorites">Favoritos</string>
     <string name="no_group">Sin grupo</string>
+    <!-- Auth -->
+    <string name="login_title">Iniciar sesión</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="action_login">Entrar</string>
+    <string name="go_to_register">¿No tienes cuenta? Regístrate</string>
+    <!-- Auth errors -->
+    <string name="auth_error_invalid_credentials">Email o contraseña incorrectos</string>
+    <string name="auth_error_user_not_found">No existe una cuenta con ese email</string>
+    <string name="auth_error_email_already_in_use">Ese email ya está registrado</string>
+    <string name="auth_error_weak_password">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="auth_error_invalid_email">El formato del email no es válido</string>
+    <string name="auth_error_network">Sin conexión a internet</string>
+    <string name="auth_error_unknown">Ha ocurrido un error, inténtalo de nuevo</string>
+    <string name="auth_error_empty_fields">Rellena todos los campos</string>
+    <string name="register_title">Crear cuenta</string>
+    <string name="hint_password_confirm">Confirmar contraseña</string>
+    <string name="action_register">Registrarse</string>
+    <string name="go_to_login">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="auth_error_passwords_dont_match">Las contraseñas no coinciden</string>
+    <!-- menu -->
+    <string name="action_logout">Cerrar sesión</string>
 </resources>

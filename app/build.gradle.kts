@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -47,6 +48,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     // Coroutines
     implementation(libs.coroutines.android)
+    implementation(libs.coroutines.play.services)
     // Media3
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
@@ -68,6 +70,10 @@ dependencies {
     implementation(libs.coil)
     //Datastore
     implementation(libs.datastore)
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.analytics)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
