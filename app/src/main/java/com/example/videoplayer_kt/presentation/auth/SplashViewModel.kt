@@ -2,7 +2,7 @@ package com.example.videoplayer_kt.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.videoplayer_kt.domain.usecases.GetCurrentUserUseCase
+import com.example.videoplayer_kt.domain.usecases.auth.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

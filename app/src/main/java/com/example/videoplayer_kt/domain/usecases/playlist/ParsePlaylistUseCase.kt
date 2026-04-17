@@ -1,4 +1,4 @@
-package com.example.videoplayer_kt.domain.usecases
+package com.example.videoplayer_kt.domain.usecases.playlist
 
 import com.example.videoplayer_kt.data.local.M3uParser
 import com.example.videoplayer_kt.domain.repository.ChannelRepository

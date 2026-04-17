@@ -3,7 +3,7 @@ package com.example.videoplayer_kt.presentation.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.domain.models.AuthResult
-import com.example.videoplayer_kt.domain.usecases.LoginUseCase
+import com.example.videoplayer_kt.domain.usecases.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
