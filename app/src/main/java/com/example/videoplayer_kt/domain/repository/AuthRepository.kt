@@ -1,6 +1,5 @@
 package com.example.videoplayer_kt.domain.repository
 
-import com.example.videoplayer_kt.domain.models.DataResult
 import com.example.videoplayer_kt.domain.models.User
 import kotlinx.coroutines.flow.Flow
 

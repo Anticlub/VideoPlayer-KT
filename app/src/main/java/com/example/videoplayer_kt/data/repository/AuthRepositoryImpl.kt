@@ -3,7 +3,6 @@ package com.example.videoplayer_kt.data.repository
 import com.example.videoplayer_kt.data.mapper.toDomain
 import com.example.videoplayer_kt.data.remote.datasource.AuthRemoteDataSource
 import com.example.videoplayer_kt.domain.models.AuthErrorType
-import com.example.videoplayer_kt.domain.models.DataResult
 import com.example.videoplayer_kt.domain.models.DomainException
 import com.example.videoplayer_kt.domain.models.User
 import com.example.videoplayer_kt.domain.repository.AuthRepository
