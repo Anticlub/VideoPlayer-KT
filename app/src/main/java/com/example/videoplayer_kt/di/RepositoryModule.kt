@@ -2,6 +2,8 @@ package com.example.videoplayer_kt.di
 
 import com.example.videoplayer_kt.data.remote.datasource.AuthRemoteDataSource
 import com.example.videoplayer_kt.data.remote.datasource.FirebaseAuthDataSourceImpl
+import com.example.videoplayer_kt.data.remote.datasource.FirebasePlaylistDataSourceImpl
+import com.example.videoplayer_kt.data.remote.datasource.PlaylistRemoteDataSource
 import com.example.videoplayer_kt.data.repository.AuthRepositoryImpl
 import com.example.videoplayer_kt.data.repository.ChannelRepositoryImpl
 import com.example.videoplayer_kt.data.repository.PlaylistRepositoryImpl
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindAuthRemoteDataSource(
         impl: FirebaseAuthDataSourceImpl
     ): AuthRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindPlaylistRemoteDataSource(
+        impl: FirebasePlaylistDataSourceImpl
+    ) : PlaylistRemoteDataSource
 }
