@@ -2,7 +2,8 @@ package com.example.videoplayer_kt.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.videoplayer_kt.domain.models.DataResult
+import com.example.videoplayer_kt.domain.models.AuthErrorType
+import com.example.videoplayer_kt.domain.models.DomainException
 import com.example.videoplayer_kt.domain.usecases.auth.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,9 +22,16 @@ class RegisterViewModel @Inject constructor(
     fun register(email: String, password: String) {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
-            when (val result = registerUseCase(email, password)) {
-                is DataResult.Success -> _uiState.value = AuthUiState.Success
-                is DataResult.Error -> _uiState.value = AuthUiState.Error(result.type)
+            runCatching {
+               registerUseCase(email, password)
+            }.onSuccess {
+                _uiState.value = AuthUiState.Success
+            }.onFailure { error ->
+                when (error){
+                    is DomainException.AuthException -> _uiState.value = AuthUiState.Error(error.authErrorType)
+                    else -> _uiState.value = AuthUiState.Error(AuthErrorType.UNKNOWN)
+                }
+
             }
         }
     }
