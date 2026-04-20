@@ -2,7 +2,8 @@ package com.example.videoplayer_kt.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.videoplayer_kt.domain.models.AuthResult
+import com.example.videoplayer_kt.domain.models.AuthErrorType
+import com.example.videoplayer_kt.domain.models.DomainException
 import com.example.videoplayer_kt.domain.usecases.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +21,22 @@ class LoginViewModel @Inject constructor(
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-            when (val result = loginUseCase(email, password)) {
-                is AuthResult.Success -> _uiState.value = AuthUiState.Success
-                is AuthResult.Error -> _uiState.value = AuthUiState.Error(result.type)
+            if (email.isEmpty() || password.isEmpty()){
+                _uiState.value = AuthUiState.Error(AuthErrorType.EMPTY_FIELDS)
+            } else {
+                _uiState.value = AuthUiState.Loading
+                runCatching {
+                    loginUseCase(email, password)
+                }.onSuccess {
+                    _uiState.value = AuthUiState.Success
+                }.onFailure { error ->
+                    when (error){
+                        is DomainException.AuthException -> _uiState.value = AuthUiState.Error(error.authErrorType)
+                        else -> _uiState.value = AuthUiState.Error(AuthErrorType.UNKNOWN)
+                    }
+                }
             }
+
         }
     }
 }

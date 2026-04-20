@@ -44,13 +44,6 @@ class LoginFragment : Fragment() {
         binding.btnLogin.setOnClickListener {
             val email = binding.etLoginEmail.text.toString().trim()
             val password = binding.etLoginPassword.text.toString()
-
-            if (email.isEmpty() || password.isEmpty()) {
-                binding.tvLoginError.text = getString(R.string.auth_error_empty_fields)
-                binding.tvLoginError.visibility = View.VISIBLE
-                return@setOnClickListener
-            }
-
             viewModel.login(email, password)
         }
 
@@ -93,8 +86,10 @@ class LoginFragment : Fragment() {
 
     private fun mapErrorToString(type: AuthErrorType): Int {
         return when (type) {
+            AuthErrorType.PASSWORD_DONT_MATCH -> R.string.auth_error_passwords_dont_match
+            AuthErrorType.EMPTY_FIELDS -> R.string.auth_error_empty_fields
             AuthErrorType.INVALID_CREDENTIALS -> R.string.auth_error_invalid_credentials
-            AuthErrorType.USER_NOT_FOUND -> R.string.auth_error_user_not_found
+            AuthErrorType.USER_NOT_FOUND -> R.string.auth_error_invalid_credentials
             AuthErrorType.NETWORK_ERROR -> R.string.auth_error_network
             AuthErrorType.EMAIL_ALREADY_IN_USE -> R.string.auth_error_email_already_in_use
             AuthErrorType.WEAK_PASSWORD -> R.string.auth_error_weak_password
