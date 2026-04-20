@@ -47,17 +47,7 @@ class RegisterFragment : Fragment() {
             val password = binding.etRegisterPassword.text.toString()
             val passwordConfirm = binding.etRegisterPasswordConfirm.text.toString()
 
-            if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
-                showError(getString(R.string.auth_error_empty_fields))
-                return@setOnClickListener
-            }
-
-            if (password != passwordConfirm) {
-                showError(getString(R.string.auth_error_passwords_dont_match))
-                return@setOnClickListener
-            }
-
-            viewModel.register(email, password)
+            viewModel.register(email, password, passwordConfirm)
         }
 
         binding.tvGoToLogin.setOnClickListener {
@@ -98,6 +88,8 @@ class RegisterFragment : Fragment() {
 
     private fun mapErrorToString(type: AuthErrorType): Int {
         return when (type) {
+            AuthErrorType.PASSWORD_DONT_MATCH -> R.string.auth_error_passwords_dont_match
+            AuthErrorType.EMPTY_FIELDS -> R.string.auth_error_empty_fields
             AuthErrorType.INVALID_CREDENTIALS -> R.string.auth_error_invalid_credentials
             AuthErrorType.USER_NOT_FOUND -> R.string.auth_error_user_not_found
             AuthErrorType.NETWORK_ERROR -> R.string.auth_error_network

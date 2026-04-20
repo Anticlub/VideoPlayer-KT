@@ -19,20 +19,26 @@ class RegisterViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
-    fun register(email: String, password: String) {
+    fun register(email: String, password: String, passwordConfirm: String) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-            runCatching {
-               registerUseCase(email, password)
-            }.onSuccess {
-                _uiState.value = AuthUiState.Success
-            }.onFailure { error ->
-                when (error){
-                    is DomainException.AuthException -> _uiState.value = AuthUiState.Error(error.authErrorType)
-                    else -> _uiState.value = AuthUiState.Error(AuthErrorType.UNKNOWN)
+            if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()){
+                _uiState.value = AuthUiState.Error(AuthErrorType.EMPTY_FIELDS)
+            } else if (password != passwordConfirm) {
+                _uiState.value = AuthUiState.Error(AuthErrorType.PASSWORD_DONT_MATCH)
+            } else {
+                _uiState.value = AuthUiState.Loading
+                runCatching {
+                    registerUseCase(email, password)
+                }.onSuccess {
+                    _uiState.value = AuthUiState.Success
+                }.onFailure { error ->
+                    when (error){
+                        is DomainException.AuthException -> _uiState.value = AuthUiState.Error(error.authErrorType)
+                        else -> _uiState.value = AuthUiState.Error(AuthErrorType.UNKNOWN)
+                    }
                 }
-
             }
+
         }
     }
 }

@@ -21,17 +21,22 @@ class LoginViewModel @Inject constructor(
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-            runCatching {
-                loginUseCase(email, password)
-            }.onSuccess {
-                _uiState.value = AuthUiState.Success
-            }.onFailure { error ->
-                when (error){
-                   is DomainException.AuthException -> _uiState.value = AuthUiState.Error(error.authErrorType)
-                    else -> _uiState.value = AuthUiState.Error(AuthErrorType.UNKNOWN)
+            if (email.isEmpty() || password.isEmpty()){
+                _uiState.value = AuthUiState.Error(AuthErrorType.EMPTY_FIELDS)
+            } else {
+                _uiState.value = AuthUiState.Loading
+                runCatching {
+                    loginUseCase(email, password)
+                }.onSuccess {
+                    _uiState.value = AuthUiState.Success
+                }.onFailure { error ->
+                    when (error){
+                        is DomainException.AuthException -> _uiState.value = AuthUiState.Error(error.authErrorType)
+                        else -> _uiState.value = AuthUiState.Error(AuthErrorType.UNKNOWN)
+                    }
                 }
             }
+
         }
     }
 }
