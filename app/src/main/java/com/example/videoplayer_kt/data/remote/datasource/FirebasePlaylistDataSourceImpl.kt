@@ -43,19 +43,6 @@ class FirebasePlaylistDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun deletePlaylist(playlistId: Long) {
-        val uid = uidUser.currentUser?.uid ?: throw DomainException.AuthException(AuthErrorType.USER_NOT_FOUND)
-        val ref = firebaseDataBase.getReference("users")
-            .child(uid)
-            .child("playlists")
-            .child(playlistId.toString())
-
-        suspendCancellableCoroutine { continuation ->
-            ref.removeValue()
-                .addOnSuccessListener { continuation.resume(Unit) }
-                .addOnFailureListener { continuation.resumeWithException(it) }
-        }
-    }
 
     override suspend fun downloadPlaylists(): List<PlaylistDto> {
         val uid = uidUser.currentUser?.uid ?: throw DomainException.AuthException(AuthErrorType.USER_NOT_FOUND)

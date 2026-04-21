@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -91,15 +92,22 @@ class PlaylistViewModel @Inject constructor(
             try {
                 val playlistId = insertPlaylisUseCase(playlist)
                 downloadAndParsePlaylist(playlist, playlistId)
+                uploadPlaylistsUseCase(playlist)
             } catch (e: Exception) {
-                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+                handleError(e)
             }
         }
     }
 
     fun deletePlaylist(playlist: Playlist) {
         viewModelScope.launch {
-            deletePlaylistUseCase(playlist)
+            try {
+                deletePlaylistUseCase(playlist)
+                val result = getPlaylistUseCase().first()
+                syncPlaylistUseCase(result)
+            } catch (e: Exception) {
+                handleError(e)
+            }
         }
     }
 
@@ -125,6 +133,7 @@ class PlaylistViewModel @Inject constructor(
                 if (oldPlaylist?.url != playlist.url) {
                     downloadAndParsePlaylist(playlist, playlist.id)
                 }
+                uploadPlaylistsUseCase(playlist)
             } catch (e: Exception) {
                 handleError(e)
             }
