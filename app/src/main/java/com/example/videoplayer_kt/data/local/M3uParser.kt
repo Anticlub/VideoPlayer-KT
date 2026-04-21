@@ -1,6 +1,5 @@
 package com.example.videoplayer_kt.data.local
 
-import android.util.Log
 import com.example.videoplayer_kt.domain.models.Channel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

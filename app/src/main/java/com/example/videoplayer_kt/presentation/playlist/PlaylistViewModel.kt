@@ -4,19 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.videoplayer_kt.data.local.UserPreferences
 import com.example.videoplayer_kt.domain.models.Playlist
+import com.example.videoplayer_kt.domain.usecases.auth.LogoutUseCase
 import com.example.videoplayer_kt.domain.usecases.channel.ClearAllChannelsUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.DeletePlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.DownloadPlaylistsUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.FetchPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistByIdUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.InsertPlaylistUseCase
-import com.example.videoplayer_kt.domain.usecases.auth.LogoutUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.ParsePlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.SyncPlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.UploadPlaylistsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +35,10 @@ class PlaylistViewModel @Inject constructor(
     private val fetchPlaylistUseCase: FetchPlaylistUseCase,
     private val userPreferences: UserPreferences,
     private val clearAllChannelsUseCase: ClearAllChannelsUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val syncPlaylistUseCase: SyncPlaylistUseCase,
+    private val uploadPlaylistsUseCase: UploadPlaylistsUseCase,
+    private val downloadPlaylistsUseCase: DownloadPlaylistsUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<PlaylistUiState>(PlaylistUiState.Loading)
@@ -62,6 +69,7 @@ class PlaylistViewModel @Inject constructor(
         )
 
     init {
+        downloadPlaylist()
         loadPlaylists()
     }
 
@@ -73,7 +81,7 @@ class PlaylistViewModel @Inject constructor(
                     _uiState.value = PlaylistUiState.Success(list)
                 }
             } catch (e: Exception) {
-                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+                handleError(e)
             }
         }
     }
@@ -83,15 +91,22 @@ class PlaylistViewModel @Inject constructor(
             try {
                 val playlistId = insertPlaylisUseCase(playlist)
                 downloadAndParsePlaylist(playlist, playlistId)
+                uploadPlaylistsUseCase(playlist.copy(id = playlistId))
             } catch (e: Exception) {
-                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+                handleError(e)
             }
         }
     }
 
     fun deletePlaylist(playlist: Playlist) {
         viewModelScope.launch {
-            deletePlaylistUseCase(playlist)
+            try {
+                deletePlaylistUseCase(playlist)
+                val result = getPlaylistUseCase().first()
+                syncPlaylistUseCase(result)
+            } catch (e: Exception) {
+                handleError(e)
+            }
         }
     }
 
@@ -117,8 +132,9 @@ class PlaylistViewModel @Inject constructor(
                 if (oldPlaylist?.url != playlist.url) {
                     downloadAndParsePlaylist(playlist, playlist.id)
                 }
+                uploadPlaylistsUseCase(playlist)
             } catch (e: Exception) {
-                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+                handleError(e)
             }
         }
     }
@@ -127,5 +143,27 @@ class PlaylistViewModel @Inject constructor(
         viewModelScope.launch {
             logoutUseCase()
         }
+    }
+
+
+
+    fun downloadPlaylist(){
+        viewModelScope.launch {
+            try {
+                downloadPlaylistsUseCase().map { playlist ->
+                    val exists = getPlaylistByIdUseCase(playlist.id)
+                    if (exists == null) {
+                        val playlistId = insertPlaylisUseCase(playlist)
+                        downloadAndParsePlaylist(playlist, playlistId)
+                    }
+                }
+            } catch (e: Exception){
+                handleError(e)
+            }
+        }
+    }
+
+    private fun handleError(e: Exception) {
+        _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
     }
 }
