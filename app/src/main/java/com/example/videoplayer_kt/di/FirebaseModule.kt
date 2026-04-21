@@ -1,5 +1,6 @@
 package com.example.videoplayer_kt.di
 
+import com.example.videoplayer_kt.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
@@ -20,6 +21,6 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirebaseDatabase(): FirebaseDatabase {
-        return FirebaseDatabase.getInstance()
+        return FirebaseDatabase.getInstance(BuildConfig.FIREBASE_DATABASE_URL)
     }
 }

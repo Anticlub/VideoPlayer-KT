@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,8 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.google.services)
 }
+val localProperties = Properties()
+localProperties.load(rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "com.example.videoplayer_kt"
@@ -19,6 +23,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "FIREBASE_DATABASE_URL",
+            "\"${localProperties["firebase_database_url"]}\""
+        )
     }
 
     buildTypes {
@@ -40,6 +49,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
