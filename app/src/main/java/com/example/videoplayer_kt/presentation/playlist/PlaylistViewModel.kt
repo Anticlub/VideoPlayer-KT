@@ -2,6 +2,7 @@ package com.example.videoplayer_kt.presentation.playlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.util.Log
 import com.example.videoplayer_kt.data.local.UserPreferences
 import com.example.videoplayer_kt.domain.models.Playlist
 import com.example.videoplayer_kt.domain.usecases.channel.ClearAllChannelsUseCase
@@ -92,7 +93,7 @@ class PlaylistViewModel @Inject constructor(
             try {
                 val playlistId = insertPlaylisUseCase(playlist)
                 downloadAndParsePlaylist(playlist, playlistId)
-                uploadPlaylistsUseCase(playlist)
+                uploadPlaylistsUseCase(playlist.copy(id = playlistId))
             } catch (e: Exception) {
                 handleError(e)
             }
@@ -146,31 +147,18 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
-    fun syncPlaylist(playlist: List<Playlist>) {
-        viewModelScope.launch {
-            try {
-                syncPlaylistUseCase(playlist)
-            } catch (e: Exception) {
-                handleError(e)
-            }
-        }
-    }
 
-    fun uploadPlaylist(playlist: Playlist) {
-        viewModelScope.launch {
-            try {
-                uploadPlaylistsUseCase(playlist)
-            } catch (e: Exception){
-                handleError(e)
-            }
-        }
-    }
 
     fun downloadPlaylist(){
         viewModelScope.launch {
             try {
-                downloadPlaylistsUseCase()
-                    .map { insertPlaylisUseCase(it) }
+                downloadPlaylistsUseCase().map { playlist ->
+                    val exists = getPlaylistByIdUseCase(playlist.id)
+                    if (exists == null) {
+                        val playlistId = insertPlaylisUseCase(playlist)
+                        downloadAndParsePlaylist(playlist, playlistId)
+                    }
+                }
             } catch (e: Exception){
                 handleError(e)
             }
