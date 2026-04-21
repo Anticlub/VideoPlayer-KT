@@ -24,7 +24,8 @@ class FirebasePlaylistDataSourceImpl @Inject constructor(
             .child("playlists")
 
         suspendCancellableCoroutine { continuation ->
-            ref.setValue(playlists)
+            val map = playlists.associate { it.id.toString() to it }
+            ref.setValue(map)
                 .addOnSuccessListener { continuation.resume(Unit) }
                 .addOnFailureListener { continuation.resumeWithException(it) }
         }
