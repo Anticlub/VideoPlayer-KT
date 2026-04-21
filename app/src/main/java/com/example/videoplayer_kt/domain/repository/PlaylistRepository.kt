@@ -8,4 +8,7 @@ interface PlaylistRepository {
     suspend fun insertPlaylist(playlist: Playlist) : Long
     suspend fun getPlaylistById(playlistId: Long): Playlist?
     suspend fun deletePlaylist(playlist: Playlist)
+    suspend fun syncPlaylist(playlist: List<Playlist>)
+    suspend fun uploadPlaylist(playlist: Playlist)
+
 }
