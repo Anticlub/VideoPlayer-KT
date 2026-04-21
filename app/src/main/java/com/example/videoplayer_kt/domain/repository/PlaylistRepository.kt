@@ -10,5 +10,5 @@ interface PlaylistRepository {
     suspend fun deletePlaylist(playlist: Playlist)
     suspend fun syncPlaylist(playlist: List<Playlist>)
     suspend fun uploadPlaylist(playlist: Playlist)
-
+    suspend fun downloadPlaylist(): List<Playlist>
 }

@@ -7,4 +7,5 @@ interface PlaylistRemoteDataSource {
     suspend fun syncPlaylists(playlists: List<PlaylistDto>)
     suspend fun uploadPlaylist(playlist: PlaylistDto)
     suspend fun deletePlaylist(playlistId: Long)
+    suspend fun downloadPlaylists(): List<PlaylistDto>
 }

@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.contracts.contract
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -52,6 +53,23 @@ class FirebasePlaylistDataSourceImpl @Inject constructor(
         suspendCancellableCoroutine { continuation ->
             ref.removeValue()
                 .addOnSuccessListener { continuation.resume(Unit) }
+                .addOnFailureListener { continuation.resumeWithException(it) }
+        }
+    }
+
+    override suspend fun downloadPlaylists(): List<PlaylistDto> {
+        val uid = uidUser.currentUser?.uid ?: throw DomainException.AuthException(AuthErrorType.USER_NOT_FOUND)
+        val ref = firebaseDataBase.getReference("users")
+            .child(uid)
+            .child("playlists")
+
+        return suspendCancellableCoroutine { continuation ->
+            ref.get()
+                .addOnSuccessListener { snapshot ->
+                    val playlists = snapshot.children
+                        .mapNotNull { it.getValue(PlaylistDto::class.java) }
+                    continuation.resume(playlists)
+                }
                 .addOnFailureListener { continuation.resumeWithException(it) }
         }
     }

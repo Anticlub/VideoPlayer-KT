@@ -48,4 +48,9 @@ class PlaylistRepositoryImpl @Inject constructor (
         val result = playlist.toDto()
         remoteDataSource.uploadPlaylist(result)
     }
+
+    override suspend fun downloadPlaylist(): List<Playlist> {
+        val result = remoteDataSource.downloadPlaylists()
+        return result.map { it.toDomain() }
+    }
 }
