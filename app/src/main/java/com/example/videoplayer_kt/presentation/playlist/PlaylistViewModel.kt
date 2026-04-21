@@ -12,6 +12,8 @@ import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.InsertPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.auth.LogoutUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.ParsePlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.SyncPlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.UploadPlaylistsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +33,9 @@ class PlaylistViewModel @Inject constructor(
     private val fetchPlaylistUseCase: FetchPlaylistUseCase,
     private val userPreferences: UserPreferences,
     private val clearAllChannelsUseCase: ClearAllChannelsUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val syncPlaylistUseCase: SyncPlaylistUseCase,
+    private val uploadPlaylistsUseCase: UploadPlaylistsUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<PlaylistUiState>(PlaylistUiState.Loading)
@@ -126,6 +130,26 @@ class PlaylistViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             logoutUseCase()
+        }
+    }
+
+    fun syncPlaylist(playlist: List<Playlist>) {
+        viewModelScope.launch {
+            try {
+                syncPlaylistUseCase(playlist)
+            } catch (e: Exception) {
+                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun uploadPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            try {
+                uploadPlaylistsUseCase(playlist)
+            } catch (e: Exception){
+                _uiState.value = PlaylistUiState.Error(e.message ?: "Unknown error")
+            }
         }
     }
 }
