@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.extractor.metadata.emsg.EventMessage
 import androidx.navigation.fragment.findNavController
 import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentRegisterBinding

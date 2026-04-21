@@ -1,6 +1,5 @@
 package com.example.videoplayer_kt.data.remote.datasource
 
-import androidx.media3.common.util.Log
 import com.example.videoplayer_kt.data.remote.dto.PlaylistDto
 import com.example.videoplayer_kt.domain.models.AuthErrorType
 import com.example.videoplayer_kt.domain.models.DomainException
@@ -8,10 +7,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
-import kotlin.contracts.contract
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 class FirebasePlaylistDataSourceImpl @Inject constructor(
     private val firebaseDataBase: FirebaseDatabase,
@@ -39,7 +36,7 @@ class FirebasePlaylistDataSourceImpl @Inject constructor(
             .child(playlist.id.toString())
 
         suspendCancellableCoroutine { continuation ->
-            Log.d("FirebaseDB", "Subiendo playlist: $playlist")
+
             ref.setValue(playlist)
                 .addOnSuccessListener { continuation.resume(Unit) }
                 .addOnFailureListener { continuation.resumeWithException(it) }

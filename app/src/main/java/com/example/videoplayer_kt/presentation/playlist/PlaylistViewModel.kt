@@ -2,21 +2,19 @@ package com.example.videoplayer_kt.presentation.playlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.util.Log
 import com.example.videoplayer_kt.data.local.UserPreferences
 import com.example.videoplayer_kt.domain.models.Playlist
+import com.example.videoplayer_kt.domain.usecases.auth.LogoutUseCase
 import com.example.videoplayer_kt.domain.usecases.channel.ClearAllChannelsUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.DeletePlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.DownloadPlaylistsUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.FetchPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistByIdUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.InsertPlaylistUseCase
-import com.example.videoplayer_kt.domain.usecases.auth.LogoutUseCase
-import com.example.videoplayer_kt.domain.usecases.playlist.DownloadPlaylistsUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.ParsePlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.SyncPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.UploadPlaylistsUseCase
-import com.example.videoplayer_kt.presentation.auth.AuthUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
