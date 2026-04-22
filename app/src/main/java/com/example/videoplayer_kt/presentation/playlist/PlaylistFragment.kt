@@ -23,25 +23,34 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class PlaylistFragment: Fragment() {
+class PlaylistFragment : Fragment() {
 
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModels()
     private val adapter = PlaylistAdapter(
         { playlist ->
-            if(playlist.hasChannels){
+            if (playlist.hasChannels) {
                 val action = PlaylistFragmentDirections
                     .actionPlaylistToChannel(playlist.id)
                 findNavController().navigate(action)
             } else {
-                Snackbar.make(binding.root, getString(R.string.playlist_no_channels), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.playlist_no_channels),
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
         },
         { playlist ->
             AlertDialog.Builder(requireContext())
                 .setTitle(playlist.name)
-                .setItems(arrayOf(getString(R.string.action_edit), getString(R.string.action_delete))) {_, index ->
+                .setItems(
+                    arrayOf(
+                        getString(R.string.action_edit),
+                        getString(R.string.action_delete)
+                    )
+                ) { _, index ->
                     when (index) {
                         0 -> {
                             val dialogBinding = DialogAddPlaylistBinding.inflate(layoutInflater)
@@ -50,26 +59,27 @@ class PlaylistFragment: Fragment() {
                             AlertDialog.Builder(requireContext())
                                 .setTitle(playlist.name)
                                 .setView(dialogBinding.root)
-                                .setPositiveButton(getString(R.string.action_edit)) {_,_ ->
+                                .setPositiveButton(getString(R.string.action_edit)) { _, _ ->
                                     val updated = playlist.copy(
                                         name = dialogBinding.etPlaylistName.text.toString().trim(),
                                         url = dialogBinding.etPlaylistUrl.text.toString().trim()
                                     )
                                     viewModel.editPlaylist(updated)
                                 }
-                                .setNegativeButton(getString(R.string.action_cancel)) {_,_ ->
+                                .setNegativeButton(getString(R.string.action_cancel)) { _, _ ->
                                     null
                                 }
                                 .show()
                         }
+
                         1 -> {
                             AlertDialog.Builder(requireContext())
                                 .setTitle(getString(R.string.title_delete_playlist, playlist.name))
                                 .setMessage(getString(R.string.confirm_delete_playlist))
-                                .setPositiveButton(getString(R.string.action_accept)) {dialog, id ->
+                                .setPositiveButton(getString(R.string.action_accept)) { dialog, id ->
                                     viewModel.deletePlaylist(playlist)
                                 }
-                                .setNegativeButton(getString(R.string.action_cancel)) {dialog, id ->
+                                .setNegativeButton(getString(R.string.action_cancel)) { dialog, id ->
                                     null
                                 }
                                 .show()
@@ -107,12 +117,14 @@ class PlaylistFragment: Fragment() {
                         binding.rvPlaylist.visibility = View.GONE
                         binding.tvErrorPlaylist.visibility = View.GONE
                     }
+
                     is PlaylistUiState.Success -> {
                         binding.pbPlaylist.visibility = View.GONE
                         binding.rvPlaylist.visibility = View.VISIBLE
                         binding.tvErrorPlaylist.visibility = View.GONE
                         adapter.submitList(state.playlists)
                     }
+
                     is PlaylistUiState.Error -> {
                         binding.pbPlaylist.visibility = View.GONE
                         binding.rvPlaylist.visibility = View.VISIBLE
@@ -129,7 +141,7 @@ class PlaylistFragment: Fragment() {
                 viewModel.lastChannelLogo,
                 viewModel.lastChannelPlaylistName,
             ) { url, name, logo, playlistName ->
-                LastChannelState(url,name, logo, playlistName)
+                LastChannelState(url, name, logo, playlistName)
             }.collect { state ->
                 if (state.url.isNotEmpty()) {
                     binding.cvLastChannelPlaylist.visibility = View.VISIBLE
@@ -139,7 +151,13 @@ class PlaylistFragment: Fragment() {
 
                     binding.cvLastChannelPlaylist.setOnClickListener {
                         val action = PlaylistFragmentDirections
-                            .actionPlaylistToPlayer(state.url, state.name, state.logo, state.playlistName)
+                            .actionPlaylistToPlayer(
+                                state.url,
+                                state.name,
+                                state.logo,
+                                state.playlistName,
+                                null
+                            )
                         findNavController().navigate(action)
                     }
                 } else {
@@ -148,6 +166,7 @@ class PlaylistFragment: Fragment() {
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -160,7 +179,6 @@ class PlaylistFragment: Fragment() {
 
     private fun setupFab() {
         binding.fabAddPlaylist.setOnClickListener {
-            // aquí abriremos el dialog
             showAddPlaylistDialog()
         }
     }
@@ -199,6 +217,7 @@ class PlaylistFragment: Fragment() {
                         findNavController().navigate(R.id.action_playlist_to_login)
                         true
                     }
+
                     else -> false
                 }
             }

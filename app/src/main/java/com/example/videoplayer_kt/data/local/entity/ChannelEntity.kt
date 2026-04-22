@@ -13,5 +13,6 @@ data class ChannelEntity(
     val group: String?,
     val logo: String?,
     val isFavorite: Boolean = false,
-    val playlistId: Long // clave foranea
+    val playlistId: Long, // clave foranea,
+    val licenseUrl: String? = null
 )

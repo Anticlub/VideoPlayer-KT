@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -20,6 +19,7 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
+import com.example.videoplayer_kt.domain.models.DrmConfig
 import com.example.videoplayer_kt.domain.models.PlaybackError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -50,6 +50,8 @@ class PlayerFragment : Fragment() {
         val streamName = args.streamName
         val streamLogo = args.streamLogo
         val streamPlyalistName = args.streamPlaylistName
+        val licenseUrl = args.licenseUrl
+        val drmConfig = licenseUrl?.let { DrmConfig(licenseUrl = it) }
         viewModel.initPlayer(streamUrl, streamName, streamLogo, streamPlyalistName)
         binding.btnAspectRatio.setOnClickListener {
             currentResizeMode = when (currentResizeMode) {
@@ -60,7 +62,7 @@ class PlayerFragment : Fragment() {
             }
             binding.playerView.resizeMode = currentResizeMode
         }
-        setupPlayer(streamUrl)
+        setupPlayer(streamUrl, drmConfig)
         observeViewModel()
     }
 
@@ -88,7 +90,7 @@ class PlayerFragment : Fragment() {
         enterFullScreen()
     }
 
-    private fun setupPlayer(url: String) {
+    private fun setupPlayer(url: String, drmConfig: DrmConfig?) {
         player = ExoPlayer.Builder(requireContext()).build()
         player?.addListener(createPlayerListener())
         binding.playerView.player = player
@@ -104,7 +106,7 @@ class PlayerFragment : Fragment() {
                 _binding?.btnAspectRatio?.visibility = visibility
             }
         )
-        val mediaItem = MediaItem.fromUri(url)
+        val mediaItem = PlayerDrmManager.buildMediaItem(url, drmConfig)
         player?.setMediaItem(mediaItem)
         player?.prepare()
         player?.playWhenReady = true

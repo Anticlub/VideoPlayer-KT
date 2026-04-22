@@ -18,16 +18,22 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ChannelFragment: Fragment() {
+class ChannelFragment : Fragment() {
     private var playlistId: Long = -1L
     private var currentPlaylistName: String = ""
     private var _binding: FragmentChannelBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChannelViewModel by viewModels()
     private val adapter = ChannelAdapter(
-        {channel ->
+        { channel ->
             val action = ChannelFragmentDirections
-                .actionChannelToPlayer(channel.url, channel.name, channel.logo?: "", currentPlaylistName)
+                .actionChannelToPlayer(
+                    channel.url,
+                    channel.name,
+                    channel.logo ?: "",
+                    currentPlaylistName,
+                    channel.drmConfig?.licenseUrl
+                )
             findNavController().navigate(action)
         },
         { channel ->
@@ -58,7 +64,7 @@ class ChannelFragment: Fragment() {
         _binding = null
     }
 
-    private fun setupRecyclerView(){
+    private fun setupRecyclerView() {
         binding.rvChannels.adapter = adapter
         binding.rvChannels.layoutManager = LinearLayoutManager(requireContext())
     }
@@ -72,6 +78,7 @@ class ChannelFragment: Fragment() {
                         binding.rvChannels.visibility = View.GONE
                         binding.tvErrorChannels.visibility = View.GONE
                     }
+
                     is ChannelUiState.Success -> {
                         binding.pbChannels.visibility = View.GONE
                         binding.rvChannels.visibility = View.VISIBLE
@@ -79,6 +86,7 @@ class ChannelFragment: Fragment() {
                         adapter.submitList(state.channels)
                         setupChipGroup(state.channels)
                     }
+
                     is ChannelUiState.Error -> {
                         binding.pbChannels.visibility = View.GONE
                         binding.rvChannels.visibility = View.GONE
@@ -108,29 +116,32 @@ class ChannelFragment: Fragment() {
         binding.chipGroupCategories.removeAllViews()
 
         // Chip "Todos"
-        val allChip = Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
-            text = context.getString(R.string.all)
-            isCheckable = true
-            isChecked = true
-        }
+        val allChip =
+            Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
+                text = context.getString(R.string.all)
+                isCheckable = true
+                isChecked = true
+            }
         allChip.setOnClickListener { viewModel.filterByGroup(null) }
         binding.chipGroupCategories.addView(allChip)
 
         // Chip "Favoritos"
-        val favoritesChip = Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
-            text= context.getString(R.string.favorites)
-            isCheckable = true
-        }
+        val favoritesChip =
+            Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
+                text = context.getString(R.string.favorites)
+                isCheckable = true
+            }
         favoritesChip.setOnClickListener { viewModel.filterFavorites() }
         favoritesChip.visibility = if (hasFavorites) View.VISIBLE else View.GONE
         binding.chipGroupCategories.addView(favoritesChip)
 
         // Chips de grupos
         groups.forEach { group ->
-            val chip = Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
-                text = group
-                isCheckable = true
-            }
+            val chip =
+                Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
+                    text = group
+                    isCheckable = true
+                }
             chip.setOnClickListener { viewModel.filterByGroup(group) }
             binding.chipGroupCategories.addView(chip)
         }
