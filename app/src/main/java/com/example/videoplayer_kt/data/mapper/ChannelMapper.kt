@@ -2,6 +2,7 @@ package com.example.videoplayer_kt.data.mapper
 
 import com.example.videoplayer_kt.data.local.entity.ChannelEntity
 import com.example.videoplayer_kt.domain.models.Channel
+import com.example.videoplayer_kt.domain.models.DrmConfig
 
 fun ChannelEntity.toDomain(): Channel {
     return Channel(
@@ -11,7 +12,8 @@ fun ChannelEntity.toDomain(): Channel {
         url = url,
         group = group,
         logo = logo,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        drmConfig = licenseUrl?.let { DrmConfig(licenseUrl = it) }
     )
 }
 
@@ -24,6 +26,7 @@ fun Channel.toEntity(playlistId: Long): ChannelEntity {
         group = group,
         logo = logo,
         isFavorite = isFavorite,
-        playlistId = playlistId
+        playlistId = playlistId,
+        licenseUrl = drmConfig?.licenseUrl
     )
 }

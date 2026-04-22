@@ -7,5 +7,6 @@ data class Channel(
     val url: String,
     val group: String? = null,
     val logo: String? = null,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val drmConfig: DrmConfig? = null
 )
