@@ -6,7 +6,9 @@ import com.example.videoplayer_kt.data.local.UserPreferences
 import com.example.videoplayer_kt.domain.models.Playlist
 import com.example.videoplayer_kt.domain.usecases.auth.LogoutUseCase
 import com.example.videoplayer_kt.domain.usecases.channel.ClearAllChannelsUseCase
+import com.example.videoplayer_kt.domain.usecases.channel.SaveChannelUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.DeletePlaylistUseCase
+import com.example.videoplayer_kt.domain.usecases.playlist.DetectUrlTypeUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.DownloadPlaylistsUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.FetchPlaylistUseCase
 import com.example.videoplayer_kt.domain.usecases.playlist.GetPlaylistByIdUseCase
@@ -38,30 +40,32 @@ class PlaylistViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val syncPlaylistUseCase: SyncPlaylistUseCase,
     private val uploadPlaylistsUseCase: UploadPlaylistsUseCase,
-    private val downloadPlaylistsUseCase: DownloadPlaylistsUseCase
-): ViewModel() {
+    private val downloadPlaylistsUseCase: DownloadPlaylistsUseCase,
+    private val detectUrlTypeUseCase: DetectUrlTypeUseCase,
+    private val saveChannelUseCase: SaveChannelUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PlaylistUiState>(PlaylistUiState.Loading)
     val uiState: StateFlow<PlaylistUiState> = _uiState.asStateFlow()
-    val lastChannelUrl : StateFlow<String> = userPreferences.lastChannelUrl
+    val lastChannelUrl: StateFlow<String> = userPreferences.lastChannelUrl
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
-    val lasChannelName : StateFlow<String> = userPreferences.lastChannelName
+    val lasChannelName: StateFlow<String> = userPreferences.lastChannelName
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
-    val lastChannelLogo : StateFlow<String> = userPreferences.lastChannelLogo
+    val lastChannelLogo: StateFlow<String> = userPreferences.lastChannelLogo
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed((5000)),
             initialValue = ""
         )
-    val lastChannelPlaylistName : StateFlow<String> = userPreferences.lastChannelPlaylist
+    val lastChannelPlaylistName: StateFlow<String> = userPreferences.lastChannelPlaylist
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -112,8 +116,13 @@ class PlaylistViewModel @Inject constructor(
 
     private suspend fun downloadAndParsePlaylist(playlist: Playlist, playlistId: Long) {
         clearAllChannelsUseCase(playlistId)
+        val channel = detectUrlTypeUseCase(playlist.url ?: "")
+        if (channel != null) {
+            saveChannelUseCase(channel, playlistId)
+            return
+        }
         val content = fetchPlaylistUseCase(playlist.url ?: "")
-        if (!content.trimStart().startsWith("#EXTM3U")){
+        if (!content.trimStart().startsWith("#EXTM3U")) {
             throw Exception("La URL no contiene una playlist M3U válida")
         }
         val updated = playlist.copy(
@@ -124,7 +133,7 @@ class PlaylistViewModel @Inject constructor(
         parsePlaylistUseCase(content, playlistId)
     }
 
-    fun editPlaylist(playlist: Playlist){
+    fun editPlaylist(playlist: Playlist) {
         viewModelScope.launch {
             try {
                 val oldPlaylist = getPlaylistByIdUseCase(playlist.id)
@@ -146,8 +155,7 @@ class PlaylistViewModel @Inject constructor(
     }
 
 
-
-    fun downloadPlaylist(){
+    fun downloadPlaylist() {
         viewModelScope.launch {
             try {
                 downloadPlaylistsUseCase().map { playlist ->
@@ -157,7 +165,7 @@ class PlaylistViewModel @Inject constructor(
                         downloadAndParsePlaylist(playlist, playlistId)
                     }
                 }
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 handleError(e)
             }
         }
