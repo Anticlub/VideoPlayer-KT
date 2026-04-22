@@ -20,12 +20,13 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.videoplayer_kt.R
 import com.example.videoplayer_kt.databinding.FragmentPlayerBinding
+import com.example.videoplayer_kt.domain.models.PlaybackError
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @UnstableApi
 @AndroidEntryPoint
-class PlayerFragment: Fragment() {
+class PlayerFragment : Fragment() {
 
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
@@ -87,7 +88,7 @@ class PlayerFragment: Fragment() {
         enterFullScreen()
     }
 
-    private fun setupPlayer(url: String){
+    private fun setupPlayer(url: String) {
         player = ExoPlayer.Builder(requireContext()).build()
         player?.addListener(createPlayerListener())
         binding.playerView.player = player
@@ -112,24 +113,27 @@ class PlayerFragment: Fragment() {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                when (state){
+                when (state) {
                     is PlayerUiState.Loading -> {
                         binding.pbPlayer.visibility = View.VISIBLE
                         binding.playerView.visibility = View.GONE
                     }
+
                     is PlayerUiState.Playing -> {
                         binding.pbPlayer.visibility = View.GONE
                         binding.playerView.visibility = View.VISIBLE
                     }
+
                     is PlayerUiState.Ended -> {
                         binding.playerView.visibility = View.GONE
                         binding.pbPlayer.visibility = View.GONE
                         binding.tvInfoPlayer.text = ""
                     }
+
                     is PlayerUiState.Error -> {
                         binding.playerView.visibility = View.GONE
                         binding.pbPlayer.visibility = View.GONE
-                        binding.tvInfoPlayer.text = state.message
+                        binding.tvInfoPlayer.text = getErrorMessage(state.error)
                     }
                 }
 
@@ -137,30 +141,44 @@ class PlayerFragment: Fragment() {
         }
     }
 
-    private fun enterFullScreen(){
+    private fun enterFullScreen() {
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
         val controller = WindowInsetsControllerCompat(requireActivity().window, binding.root)
         controller.hide(WindowInsetsCompat.Type.systemBars())
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
-    private fun exitFullScreen(){
+    private fun exitFullScreen() {
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
         val controller = WindowInsetsControllerCompat(requireActivity().window, binding.root)
         controller.show(WindowInsetsCompat.Type.systemBars())
     }
 
     private fun createPlayerListener() = object : Player.Listener {
-        override fun onPlaybackStateChanged(playbackState: Int){
+        override fun onPlaybackStateChanged(playbackState: Int) {
             when (playbackState) {
                 Player.STATE_BUFFERING -> viewModel.onBuffering()
                 Player.STATE_READY -> viewModel.onPlaying()
-                Player.STATE_ENDED -> {viewModel.onEnded()}
+                Player.STATE_ENDED -> {
+                    viewModel.onEnded()
+                }
+
                 Player.STATE_IDLE -> {}
             }
         }
+
         override fun onPlayerError(error: PlaybackException) {
-            viewModel.onError(error.localizedMessage ?: requireContext().getString(R.string.unknown_error))
+            viewModel.onError(error)
+        }
+    }
+
+    private fun getErrorMessage(error: PlaybackError): String {
+        return when (error) {
+            PlaybackError.Drm -> getString(R.string.playback_error_drm)
+            PlaybackError.Network -> getString(R.string.playback_error_network)
+            PlaybackError.Source -> getString(R.string.playback_error_source)
+            is PlaybackError.Unknown -> error.message ?: getString(R.string.unknown_error)
         }
     }
 }

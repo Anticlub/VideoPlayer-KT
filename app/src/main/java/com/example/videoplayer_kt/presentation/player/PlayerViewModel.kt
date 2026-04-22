@@ -2,7 +2,9 @@ package com.example.videoplayer_kt.presentation.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.PlaybackException
 import com.example.videoplayer_kt.data.local.UserPreferences
+import com.example.videoplayer_kt.data.mapper.PlaybackErrorMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val userPreferences: UserPreferences
-) : ViewModel(){
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
@@ -24,8 +26,20 @@ class PlayerViewModel @Inject constructor(
             userPreferences.saveLastChannel(url, name, logo, playlist)
         }
     }
-    fun onBuffering() { _uiState.value = PlayerUiState.Loading }
-    fun onPlaying() { _uiState.value = PlayerUiState.Playing }
-    fun onEnded() { _uiState.value = PlayerUiState.Ended }
-    fun onError(message: String) { _uiState.value = PlayerUiState.Error(message) }
+
+    fun onBuffering() {
+        _uiState.value = PlayerUiState.Loading
+    }
+
+    fun onPlaying() {
+        _uiState.value = PlayerUiState.Playing
+    }
+
+    fun onEnded() {
+        _uiState.value = PlayerUiState.Ended
+    }
+
+    fun onError(error: PlaybackException) {
+        _uiState.value = PlayerUiState.Error(PlaybackErrorMapper.map(error))
+    }
 }
