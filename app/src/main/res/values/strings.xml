@@ -15,6 +15,7 @@
     <string name="action_accept">Aceptar</string>
     <string name="title_delete_playlist">Eliminar %s</string>
     <string name="confirm_delete_playlist">¿Seguro que quiere eliminar la playlist?</string>
+    <string name="direct_stream_detected">Direct stream URL detected, added as a single channel</string>
     <!-- Player -->
     <string name="video_ended">"Stream finalizado"</string>
     <string name="unknown_error">Error desconocido</string>
