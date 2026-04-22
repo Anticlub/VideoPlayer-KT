@@ -5,14 +5,14 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [ChannelEntity::class, PlaylistEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
-abstract class AppDatabase : RoomDatabase(){
+abstract class AppDatabase : RoomDatabase() {
     abstract fun channelDao(): ChannelDao
     abstract fun playlistDao(): PlaylistDao
 
-    companion object{
+    companion object {
         const val DATABASE_NAME = "videoplayer_db"
     }
 }

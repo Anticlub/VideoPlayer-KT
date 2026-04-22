@@ -1,10 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.google.services)
 }
+val localProperties = Properties()
+localProperties.load(rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "com.example.videoplayer_kt"
@@ -18,6 +23,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "FIREBASE_DATABASE_URL",
+            "\"${localProperties["firebase_database_url"]}\""
+        )
     }
 
     buildTypes {
@@ -39,6 +49,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -47,6 +58,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     // Coroutines
     implementation(libs.coroutines.android)
+    implementation(libs.coroutines.play.services)
     // Media3
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
@@ -68,6 +80,11 @@ dependencies {
     implementation(libs.coil)
     //Datastore
     implementation(libs.datastore)
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.database)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
