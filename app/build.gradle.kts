@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.google.services)
 }
 val localProperties = Properties()
-localProperties.load(rootProject.file("local.properties").inputStream())
+rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { localProperties.load(it) }
 
 android {
     namespace = "dev.anticlub.videoplayer"
@@ -26,7 +26,7 @@ android {
         buildConfigField(
             "String",
             "FIREBASE_DATABASE_URL",
-            "\"${localProperties["firebase_database_url"]}\""
+            "\"${localProperties["firebase_database_url"] ?: System.getenv("FIREBASE_DATABASE_URL") ?: ""}\""
         )
     }
 
