@@ -20,10 +20,38 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Create google-services.json
-        env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
+      # CI only builds and runs unit tests (no live Firebase), so a dummy
+      # google-services.json is enough to satisfy the Google Services plugin.
+      # The real file stays local and gitignored.
+      - name: Create dummy google-services.json
+        run: |
+          cat > app/google-services.json <<'JSON'
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "videoplayer-ci",
+              "storage_bucket": "videoplayer-ci.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                  "android_client_info": {
+                    "package_name": "dev.anticlub.videoplayer"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  { "current_key": "AIzaSyDUMMYDUMMYDUMMYDUMMYDUMMYDUMMY000" }
+                ],
+                "services": {
+                  "appinvite_service": { "other_platform_oauth_client": [] }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          JSON
 
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
