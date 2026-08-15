@@ -12,11 +12,11 @@ val localProperties = Properties()
 localProperties.load(rootProject.file("local.properties").inputStream())
 
 android {
-    namespace = "com.example.videoplayer_kt"
+    namespace = "dev.anticlub.videoplayer"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.videoplayer_kt"
+        applicationId = "dev.anticlub.videoplayer"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
