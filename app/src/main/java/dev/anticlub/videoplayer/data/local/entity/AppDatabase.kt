@@ -1,0 +1,18 @@
+package dev.anticlub.videoplayer.data.local.entity
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
+@Database(
+    entities = [ChannelEntity::class, PlaylistEntity::class],
+    version = 3,
+    exportSchema = false
+)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun channelDao(): ChannelDao
+    abstract fun playlistDao(): PlaylistDao
+
+    companion object {
+        const val DATABASE_NAME = "videoplayer_db"
+    }
+}

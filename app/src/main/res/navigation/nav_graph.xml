@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.videoplayer_kt.presentation.auth.SplashFragment"
+        android:name="dev.anticlub.videoplayer.presentation.auth.SplashFragment"
         android:label="Splash">
         <action
             android:id="@+id/action_splash_to_login"
@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.videoplayer_kt.presentation.auth.LoginFragment"
+        android:name="dev.anticlub.videoplayer.presentation.auth.LoginFragment"
         android:label="Login">
         <action
             android:id="@+id/action_login_to_register"
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.videoplayer_kt.presentation.auth.RegisterFragment"
+        android:name="dev.anticlub.videoplayer.presentation.auth.RegisterFragment"
         android:label="Register">
         <action
             android:id="@+id/action_register_to_login"
@@ -52,7 +52,7 @@
 
     <fragment
         android:id="@+id/playlistFragment"
-        android:name="com.example.videoplayer_kt.presentation.playlist.PlaylistFragment"
+        android:name="dev.anticlub.videoplayer.presentation.playlist.PlaylistFragment"
         android:label="Playlists">
         <action
             android:id="@+id/action_playlist_to_channel"
@@ -69,7 +69,7 @@
 
     <fragment
         android:id="@+id/channelFragment"
-        android:name="com.example.videoplayer_kt.presentation.channel.ChannelFragment"
+        android:name="dev.anticlub.videoplayer.presentation.channel.ChannelFragment"
         android:label="Channels">
         <argument
             android:name="playlistId"
@@ -82,7 +82,7 @@
 
     <fragment
         android:id="@+id/playerFragment"
-        android:name="com.example.videoplayer_kt.presentation.player.PlayerFragment"
+        android:name="dev.anticlub.videoplayer.presentation.player.PlayerFragment"
         android:label="Player">
         <argument
             android:name="streamUrl"
