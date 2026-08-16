@@ -3,6 +3,7 @@
 > Reproductor de IPTV para **Android** (Kotlin): listas M3U/M3U8/RPD, canales, favoritos,
 > reproducción HLS/DASH y autenticación con backend en la nube.
 
+[![CI](https://github.com/Anticlub/VideoPlayer-KT/actions/workflows/ci.yml/badge.svg)](https://github.com/Anticlub/VideoPlayer-KT/actions/workflows/ci.yml)
 ![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
 ![Language](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)
 ![Min SDK](https://img.shields.io/badge/minSdk-24-blue)
@@ -45,7 +46,7 @@ Mismo producto, dos ecosistemas nativos.
 | Login + backend | 🚧 | ✅ Firebase |
 | Backend compartido | 🚧 | ✅ |
 | Tests unitarios | ✅ | 🚧 |
-| CI | 🚧 | 🚧 |
+| CI | ✅ | ✅ |
 
 Las casillas 🚧 son el roadmap público del proyecto multiplataforma.
 
